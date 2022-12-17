@@ -6,9 +6,9 @@ const ProductSchema = new Schema({
   description: { type: String, required: true },
   SKU: { type: String, required: true },
   category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
-  quantity: { type: Number, required: true },
+  quantity: { type: Number, min: 0, required: true },
   images: { type: String, required: true },
-  price: { type: Number, required: true },
+  price: { type: Number, min: 0, required: true },
 });
 
 ProductSchema.virtual('url').get(() => {
