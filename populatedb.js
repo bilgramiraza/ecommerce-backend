@@ -49,7 +49,7 @@ function productCreate(name, description, SKU, category, quantity, price, callba
     }
     console.log(`New Product: ${product.name}`);
     products.push(product);
-    cb(null, product);
+    callback(null, product);
   });
 }
 
@@ -70,7 +70,7 @@ function categoryCreate(name, description, callback) {
     }
     console.log(`New Category: ${category.name}`);
     categories.push(category);
-    cb(null, category);
+    callback(null, category);
   });
 }
 

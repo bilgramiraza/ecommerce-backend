@@ -7,7 +7,6 @@ const ProductSchema = new Schema({
   SKU: { type: String, required: true },
   category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
   quantity: { type: Number, min: 0, required: true },
-  images: { type: String, required: true },
   price: { type: Number, min: 0, required: true },
 });
 
