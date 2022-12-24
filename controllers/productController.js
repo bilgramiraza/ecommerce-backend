@@ -1,7 +1,26 @@
 const Product = require('../models/product');
+const Category = require('../models/category');
+
+const async = require('async');
 
 exports.index = (req, res) => {
-  res.send('NOT IMPLEMENTED: Site Home Page');
+  async.parallel(
+    {
+      productCount(callback) {
+        Product.countDocuments({}, callback);
+      },
+      categoryCount(callback) {
+        Category.countDocuments({}, callback);
+      },
+    },
+    (err, results) => {
+      res.render('index', {
+        title: 'Ecommerce Site',
+        error: err,
+        data: results,
+      });
+    }
+  );
 };
 
 exports.productList = (req, res) => {
