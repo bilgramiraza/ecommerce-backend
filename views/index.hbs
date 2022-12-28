@@ -1,27 +1,39 @@
-<main>
-  <p>Welcome to {{title}}, A basic Inventory management Website built using 
-    Express and MongoDB.
-  </p>
+<main class="text-center">
+  <h2 class="my-4">
+    {{title}}
+  </h2>
   {{#if error}}
-    <p>Error getting Inventory Details {{error}}</p>
+    <h3 class="text-center text-warning">Error getting Inventory Details</h3>
   {{else}}
-    <table class="table table-striped table-bordered w-50">
-      <tr>
-        <th>
-          Products
-        </th>
-        <td>
+  <div class="row justify-content-evenly mx-auto w-75">
+    <div class="col-lg-3">
+      <div class="card text-center">
+        <h3 class="card-header">
+          Products 
+        </h3>
+        <h4 class="my-3 fw-bolder">
           {{data.productCount}}
-        </td>
-      </tr>
-      <tr>
-        <th>
+        </h4>
+        <h4>
+          <a href="/inventory/products" class="btn btn-primary">All Products</a>
+          <a href="/inventory/product/create" class="btn btn-success">Add New Product</a>
+        </h4>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card text-center">
+        <h3 class="card-header">
           Categories
-        </th>
-        <td>
+        </h3>
+        <h4 class="my-3 fw-bolder">
           {{data.categoryCount}}
-        </td>
-      </tr>
-    </table> 
+        </h4>
+        <h4>
+          <a href="/inventory/categories" class="btn btn-primary">All Categories</a>
+          <a href="/inventory/category/create" class="btn btn-success">Add New Category</a>
+        </h4>
+      </div> 
+    </div>
+  </div>
   {{/if}}
 </main>

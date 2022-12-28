@@ -15,7 +15,7 @@ exports.index = (req, res) => {
     },
     (err, results) => {
       res.render('index', {
-        title: 'Ecommerce Site',
+        title: 'Ecommerce Dashboard',
         error: err,
         data: results,
       });
