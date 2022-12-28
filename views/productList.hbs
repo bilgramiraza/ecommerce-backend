@@ -1,0 +1,18 @@
+<main>
+  <h2 class="my-4">{{title}}</h2>
+  <ul>
+    {{#each products}}
+      <div>
+        <p>
+          <a href={{this.url}}>{{this.name}}</a> 
+        </p>
+        <p>Category: {{this.category}}</p>
+        <p>Qty: {{this.quantity}}</p>
+      </div>
+    {{else}}
+      <div>
+        <p>No Products Found</p>
+      </div>
+    {{/each}}
+  </ul>
+</main>

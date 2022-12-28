@@ -29,7 +29,17 @@ exports.productList = (req, res) => {
     .populate('category')
     .exec((err, listProducts) => {
       if (err) return next(err);
-      res.render('productList', { title: 'Products', products: listProducts });
+      res.render('productList', {
+        title: 'Products',
+        products: listProducts.map((product) => {
+          return {
+            name: product.name,
+            category: product.category.name,
+            quantity: product.quantity,
+            url: product.url,
+          };
+        }),
+      });
     });
 };
 
