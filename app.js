@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config();
+const exphbs = require('express-handlebars');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -21,6 +22,14 @@ db.on('error', console.error.bind(console, 'MongoDB Connection Error:'));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+
+// Configure the handlebars engine
+app.engine(
+  'hbs',
+  exphbs.engine({
+    extname: 'hbs',
+  })
+);
 
 app.use(logger('dev'));
 app.use(express.json());
