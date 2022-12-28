@@ -24,7 +24,13 @@ exports.index = (req, res) => {
 };
 
 exports.productList = (req, res) => {
-  res.send('NOT IMPLEMENTED: Product List');
+  Product.find({}, 'name category quantity')
+    .sort({ name: 1 })
+    .populate('category')
+    .exec((err, listProducts) => {
+      if (err) return next(err);
+      res.render('productList', { title: 'Products', products: listProducts });
+    });
 };
 
 exports.productDetail = (req, res) => {
