@@ -1,7 +1,27 @@
 const Category = require('../models/category');
 
+// Export a function that handles the request to the '/products' route
 exports.categoryList = (req, res) => {
-  res.send('NOT IMPLEMENTED: Category List');
+  // Find all products in the 'Category' collection and
+  ///return only the 'name', 'description' properties
+  Category.find({}, 'name description')
+    .sort({ name: 1 })
+    .exec((err, listCategories) => {
+      if (err) return next(err);
+      //To avoid an security expliot Handlebars cannot access properties of mongoose objects directly
+      //Hence, we are required to manually copy the properties to another variable
+      const copiedListCategories = listCategories.map((category) => {
+        return {
+          name: category.name,
+          description: category.description,
+          url: category.url,
+        };
+      });
+      res.render('categoryList', {
+        title: 'Categories',
+        categories: copiedListCategories,
+      });
+    });
 };
 
 exports.categoryDetail = (req, res) => {
