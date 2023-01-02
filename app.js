@@ -13,6 +13,7 @@ const inventoryRouter = require('./routes/inventory');
 var app = express();
 
 const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
 const mongodbURI = process.env.MONGODB_URI;
 const mongodbParams = { useNewUrlParser: true, useUnifiedTopology: true };
 mongoose.connect(mongodbURI, mongodbParams);
