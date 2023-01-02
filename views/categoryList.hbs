@@ -1,0 +1,18 @@
+<main>
+  <h2 class="my-4">{{title}}</h2>
+  <ul>
+    {{#each categories}}
+      <div>
+        <p>
+          <a href={{this.url}}>{{this.name}}</a> 
+        </p>
+
+        <p>{{this.description}}</p>
+      </div>
+    {{else}}
+      <div>
+        <p>No Categories Found</p>
+      </div>
+    {{/each}}
+  </ul>
+</main>
