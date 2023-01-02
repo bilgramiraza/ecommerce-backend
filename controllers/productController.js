@@ -23,22 +23,28 @@ exports.index = (req, res) => {
   );
 };
 
+// Export a function that handles the request to the '/products' route
 exports.productList = (req, res) => {
+  // Find all products in the 'Product' collection and
+  ///return only the 'name', 'category', and 'quantity' properties
   Product.find({}, 'name category quantity')
     .sort({ name: 1 })
     .populate('category')
     .exec((err, listProducts) => {
       if (err) return next(err);
+      //To avoid an security expliot Handlebars cannot access properties of mongoose objects directly
+      //Hence, we are required to manually copy the properties to another variable
+      const copiedListProducts = listProducts.map((product) => {
+        return {
+          name: product.name,
+          category: product.category.name,
+          quantity: product.quantity,
+          url: product.url,
+        };
+      });
       res.render('productList', {
         title: 'Products',
-        products: listProducts.map((product) => {
-          return {
-            name: product.name,
-            category: product.category.name,
-            quantity: product.quantity,
-            url: product.url,
-          };
-        }),
+        products: copiedListProducts,
       });
     });
 };

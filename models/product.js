@@ -10,8 +10,8 @@ const ProductSchema = new Schema({
   price: { type: Number, min: 0, required: true },
 });
 
-ProductSchema.virtual('url').get(() => {
-  return `/inventory/product/${this._id}`;
+ProductSchema.virtual('url').get(function () {
+  return `/inventory/product/${this._id.toString()}`;
 });
 
 module.exports = mongoose.model('Product', ProductSchema);
