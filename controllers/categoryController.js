@@ -2,9 +2,9 @@ const Category = require('../models/category');
 const Product = require('../models/product');
 const async = require('async');
 
-// Export a function that handles the request to the '/products' route
+// Export a function that handles the request to the '/categories' route
 exports.categoryList = (req, res, next) => {
-  // Find all products in the 'Category' collection and
+  // Find all categories in the 'Category' collection and
   ///return only the 'name', 'description' properties
   Category.find({}, 'name description')
     .sort({ name: 1 })
