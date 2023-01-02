@@ -24,7 +24,7 @@ exports.index = (req, res) => {
 };
 
 // Export a function that handles the request to the '/products' route
-exports.productList = (req, res) => {
+exports.productList = (req, res, next) => {
   // Find all products in the 'Product' collection and
   ///return only the 'name', 'category', and 'quantity' properties
   Product.find({}, 'name category quantity')

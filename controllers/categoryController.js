@@ -1,7 +1,8 @@
 const Category = require('../models/category');
+const async = require('async');
 
 // Export a function that handles the request to the '/products' route
-exports.categoryList = (req, res) => {
+exports.categoryList = (req, res, next) => {
   // Find all products in the 'Category' collection and
   ///return only the 'name', 'description' properties
   Category.find({}, 'name description')
@@ -24,9 +25,7 @@ exports.categoryList = (req, res) => {
     });
 };
 
-exports.categoryDetail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Category Detail ${req.params.id}`);
-};
+exports.categoryDetail = (req, res) => {};
 
 exports.categoryCreateGet = (req, res) => {
   res.send('NOT IMPLEMENTED: Category Create GET');
