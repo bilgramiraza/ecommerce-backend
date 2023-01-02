@@ -49,8 +49,32 @@ exports.productList = (req, res, next) => {
     });
 };
 
-exports.productDetail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Product Detail ${req.params.id}`);
+// Export a function that handles the request to the '/product/:id' route
+exports.productDetail = (req, res, next) => {
+  // Find the Product in the 'Product' collection and
+  ///return its properties
+  Product.findById(req.params.id)
+    .populate('category')
+    .exec((err, productDetails) => {
+      if (err) return next(err);
+      if (productDetails == null) {
+        const err = new Error('Product not Found');
+        err.status = 404;
+        return next(err);
+      }
+      const categoryDetails = {
+        name: productDetails.category.name,
+        url: productDetails.category.url,
+      };
+      res.render('productDetail', {
+        title: productDetails.name,
+        description: productDetails.description,
+        SKU: productDetails.SKU,
+        category: categoryDetails,
+        quantity: productDetails.quantity,
+        price: productDetails.price,
+      });
+    });
 };
 
 exports.productCreateGet = (req, res) => {
