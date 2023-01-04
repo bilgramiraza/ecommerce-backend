@@ -1,6 +1,7 @@
 const Category = require('../models/category');
 const Product = require('../models/product');
 const async = require('async');
+const { body, validationResult } = require('express-validator');
 
 // Export a function that handles the request to the '/categories' route
 exports.categoryList = (req, res, next) => {
@@ -68,8 +69,8 @@ exports.categoryDetail = (req, res, next) => {
   );
 };
 
-exports.categoryCreateGet = (req, res) => {
-  res.send('NOT IMPLEMENTED: Category Create GET');
+exports.categoryCreateGet = (req, res, next) => {
+  res.render('categoryForm', { title: 'Create Category' });
 };
 
 exports.categoryCreatePost = (req, res) => {
