@@ -69,10 +69,12 @@ exports.categoryDetail = (req, res, next) => {
   );
 };
 
+// Export a function that handles the request to the '/category/create' Get route
 exports.categoryCreateGet = (req, res, next) => {
   res.render('categoryForm', { title: 'Create Category' });
 };
 
+// Export a function that handles the request to the '/category/create' Post route
 exports.categoryCreatePost = [
   body('name', 'Category Name Required').trim().isLength({ min: 1 }).escape(),
   body('description', 'Category Description Missing').trim().isLength({ min: 1 }).escape(),
@@ -82,7 +84,8 @@ exports.categoryCreatePost = [
       name: req.body.name,
       description: req.body.description,
     });
-
+    //If the returned data had failed validation, We reload the page and
+    //return all the entered data And all the Mistakes made by the user
     if (!errors.isEmpty()) {
       res.render('categoryForm', {
         title: 'Create Category',
@@ -91,6 +94,9 @@ exports.categoryCreatePost = [
       });
       return;
     } else {
+      //If the Data passes validation We check for duplicates of this data
+      //If duplicates are found we redirect to the existing categories page
+      //Else we save it and redirect to the new categories page
       category.findOne({ name: req.body.name }).exec((err, foundCategory) => {
         if (err) return next(err);
         if (foundCategory) res.redirect(foundCategory.url);
