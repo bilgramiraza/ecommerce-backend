@@ -73,9 +73,35 @@ exports.categoryCreateGet = (req, res, next) => {
   res.render('categoryForm', { title: 'Create Category' });
 };
 
-exports.categoryCreatePost = (req, res) => {
-  res.send('NOT IMPLEMENTED: Category Create POST');
-};
+exports.categoryCreatePost = [
+  body('name', 'Category Name Required').trim().isLength({ min: 1 }).escape(),
+  body('description', 'Category Description Missing').trim().isLength({ min: 1 }).escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render('categoryForm', {
+        title: 'Create Category',
+        category,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      category.findOne({ name: req.body.name }).exec((err, foundCategory) => {
+        if (err) return next(err);
+        if (foundCategory) res.redirect(foundCategory.url);
+        category.save((err) => {
+          if (err) return next(err);
+          res.redirect(category.url);
+        });
+      });
+    }
+  },
+];
 
 exports.categoryDeleteGet = (req, res) => {
   res.send('NOT IMPLEMENTED: Category Delete GET');
