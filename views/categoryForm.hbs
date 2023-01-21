@@ -1,0 +1,33 @@
+<main>
+  <h2 class="my-4">{{title}}</h2>
+  <form action="" method="POST">
+    <div>
+      <label for="name">Category Name: </label>
+      <input 
+        type="text" 
+        id="name" 
+        name="name"
+        required="true"
+        {{#if name}}
+          value={{name}}
+        {{/if}}
+      >
+    </div>
+    <div>
+      <label for="description">Category Description</label>
+      <textarea 
+        id="description" 
+        name="description"
+        required="true"
+     >{{#if description}}{{description}}{{/if}}</textarea>
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+  {{#if error}}
+    <ul>
+      {{#each error}}
+      <p>{{this.msg}}</p>
+      {{/each}}
+    </ul>
+  {{/if}}
+</main>
