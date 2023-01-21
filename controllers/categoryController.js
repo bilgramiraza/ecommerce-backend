@@ -80,16 +80,14 @@ exports.categoryCreatePost = [
   body('description', 'Category Description Missing').trim().isLength({ min: 1 }).escape(),
   (req, res, next) => {
     const errors = validationResult(req);
-    const category = new Category({
-      name: req.body.name,
-      description: req.body.description,
-    });
     //If the returned data had failed validation, We reload the page and
     //return all the entered data And all the Mistakes made by the user
+    //Destructured Category to avoid Handlebars Security flaw issue
     if (!errors.isEmpty()) {
       res.render('categoryForm', {
         title: 'Create Category',
-        category,
+        name: req.body.name,
+        description: req.body.description,
         errors: errors.array(),
       });
       return;
@@ -97,7 +95,11 @@ exports.categoryCreatePost = [
       //If the Data passes validation We check for duplicates of this data
       //If duplicates are found we redirect to the existing categories page
       //Else we save it and redirect to the new categories page
-      category.findOne({ name: req.body.name }).exec((err, foundCategory) => {
+      const category = new Category({
+        name: req.body.name,
+        description: req.body.description,
+      });
+      Category.findOne({ name: req.body.name }).exec((err, foundCategory) => {
         if (err) return next(err);
         if (foundCategory) res.redirect(foundCategory.url);
         category.save((err) => {
