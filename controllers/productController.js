@@ -77,8 +77,9 @@ exports.productDetail = (req, res, next) => {
     });
 };
 
-exports.productCreateGet = (req, res) => {
-  res.send('NOT IMPLEMENTED: Product Create GET');
+// Export a function that handles the request to the '/product/create' Get route
+exports.productCreateGet = (req, res, next) => {
+  res.render('productForm', { title: 'Add Product' });
 };
 
 exports.productCreatePost = (req, res) => {
