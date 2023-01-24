@@ -79,15 +79,18 @@ exports.productDetail = (req, res, next) => {
 
 // Export a function that handles the request to the '/product/create' Get route
 exports.productCreateGet = (req, res, next) => {
+  //Find all categories in the database, select only name property,
+  //and return a JS object containing the _id and name values
   Category.find({})
     .select('name')
     .lean()
     .exec((err, categoryList) => {
       if (err) return next(err);
-      const categories = categoryList.map(({ _id, name }) => ({ _id, name }));
+      //We don't need to copy items into a new variable since the lean option
+      //returns a JS object rather than a mongoose document
       res.render('productForm', {
         title: 'Add Product',
-        categories,
+        categories: categoryList,
       });
     });
 };
