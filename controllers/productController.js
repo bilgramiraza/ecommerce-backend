@@ -79,17 +79,17 @@ exports.productDetail = (req, res, next) => {
 
 // Export a function that handles the request to the '/product/create' Get route
 exports.productCreateGet = (req, res, next) => {
-  Category.find({}, 'name').exec((err, categoryList) => {
-    if (err) return next(err);
-    let categories = [];
-    for (let category of categoryList) {
-      categories.push({ id: category._id, name: category.name });
-    }
-    res.render('productForm', {
-      title: 'Add Product',
-      categories,
+  Category.find({})
+    .select('name')
+    .lean()
+    .exec((err, categoryList) => {
+      if (err) return next(err);
+      const categories = categoryList.map(({ _id, name }) => ({ _id, name }));
+      res.render('productForm', {
+        title: 'Add Product',
+        categories,
+      });
     });
-  });
 };
 
 // Export a function that handles the request to the '/product/create' Post route
