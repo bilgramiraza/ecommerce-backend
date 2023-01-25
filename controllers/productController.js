@@ -2,6 +2,7 @@ const Product = require('../models/product');
 const Category = require('../models/category');
 
 const async = require('async');
+const { body, validationResult } = require('express-validator');
 
 exports.index = (req, res) => {
   async.parallel(
@@ -96,9 +97,60 @@ exports.productCreateGet = (req, res, next) => {
 };
 
 // Export a function that handles the request to the '/product/create' Post route
-exports.productCreatePost = (req, res, next) => {
-  res.send('NOT IMPLEMENTED: Product Create POST');
-};
+exports.productCreatePost = [
+  body('name', 'Product Name must be specified').trim().isLength({ min: 1 }).escape(),
+  body('description', 'Product Description must be specified')
+    .trim()
+    .isLength({ min: 1, max: 500 })
+    .escape(),
+  body('sku', 'Product SKU must be specified').trim().isLength({ min: 1 }).escape(),
+  body('category', 'Product Category must be specified').trim().isLength({ min: 1 }).escape(),
+  body('quantity', 'Product Quantity must be specified')
+    .isInt({ gt: 0 })
+    .withMessage('Product Quantity must be an Positive Number'),
+  body('price', 'Product Price must be specified')
+    .isFloat({ gt: 0 })
+    .withMessage('The Product Price must be a positive number'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    //If the returned data had failed validation, We reload the page and
+    //return all the entered data And all the Mistakes made by the user
+    //Destructured Category to avoid Handlebars Security flaw issue
+    if (!errors.isEmpty()) {
+      res.render('productForm', {
+        title: 'Add Product',
+        name: req.body.name,
+        description: req.body.description,
+        SKU: req.body.sku,
+        category: req.body.category,
+        quantity: req.body.quantity,
+        price: req.body.price,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      //If the Data passes validation We check for duplicates of this data
+      //If duplicates are found we redirect to the existing product page
+      //Else we save it and redirect to the new product page
+      const product = new Product({
+        name: req.body.name,
+        description: req.body.description,
+        SKU: req.body.sku,
+        category: req.body.category,
+        quantity: req.body.quantity,
+        price: req.body.price,
+      });
+      Product.findOne({ name: req.body.name }).exec((err, foundProduct) => {
+        if (err) return next(err);
+        if (foundProduct) res.redirect(foundProduct.url);
+        product.save((err) => {
+          if (err) return next(err);
+          res.redirect(product.url);
+        });
+      });
+    }
+  },
+];
 
 exports.productDeleteGet = (req, res) => {
   res.send('NOT IMPLEMENTED: Product Delete GET');
