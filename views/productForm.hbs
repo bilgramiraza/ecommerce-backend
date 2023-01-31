@@ -28,8 +28,8 @@
         id="sku" 
         name="sku"
         required="true"
-        {{#if sku}}
-          value={{sku}}
+        {{#if SKU}}
+          value={{SKU}}
         {{/if}}
       >
     </div>
@@ -42,14 +42,21 @@
         required="true"
       >
       {{#each categories}}
-        <option value={{this._id}}>{{this.name}}</option>
+        <option 
+          value={{this._id}}
+          {{#selected ../category this._id}}
+            selected="selected" 
+          {{/selected}}
+          > 
+          {{{this.name}}}
+        </option>  
       {{/each}}
       </select>
     </div>
     <div>
       <label for="quantity">Product Quantity: </label>
       <input 
-        type="text" 
+        type="number" 
         id="quantity" 
         name="quantity"
         required="true"
