@@ -30,6 +30,7 @@ app.engine(
   exphbs.engine({
     extname: 'hbs',
     helpers: {
+      // A custom helper named "selected" to set the selected attribute of an option in a select tag
       selected: function (value1, value2, options) {
         if (value1 === value2.toString()) {
           return options.fn(this);
