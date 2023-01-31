@@ -85,6 +85,7 @@ exports.productCreateGet = (req, res, next) => {
   Category.find({})
     .select('name')
     .lean()
+    .sort({ name: 1 })
     .exec((err, categoryList) => {
       if (err) return next(err);
       //We don't need to copy items into a new variable since the lean option
@@ -117,16 +118,24 @@ exports.productCreatePost = [
     //return all the entered data And all the Mistakes made by the user
     //Destructured Category to avoid Handlebars Security flaw issue
     if (!errors.isEmpty()) {
-      res.render('productForm', {
-        title: 'Add Product',
-        name: req.body.name,
-        description: req.body.description,
-        SKU: req.body.sku,
-        category: req.body.category,
-        quantity: req.body.quantity,
-        price: req.body.price,
-        errors: errors.array(),
-      });
+      Category.find({})
+        .select('name')
+        .lean()
+        .sort({ name: 1 })
+        .exec((err, categoryList) => {
+          if (err) return next(err);
+          res.render('productForm', {
+            title: 'Add Product',
+            name: req.body.name,
+            description: req.body.description,
+            SKU: req.body.sku,
+            category: req.body.category,
+            quantity: req.body.quantity,
+            price: req.body.price,
+            categories: categoryList,
+            errors: errors.array(),
+          });
+        });
       return;
     } else {
       //If the Data passes validation We check for duplicates of this data
