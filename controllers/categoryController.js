@@ -71,7 +71,7 @@ exports.categoryDetail = (req, res, next) => {
 
 // Export a function that handles the request to the '/category/create' Get route
 exports.categoryCreateGet = (req, res, next) => {
-  res.render('categoryForm', { title: 'Create Category' });
+  res.render('categoryForm', { title: 'Add Category Details' });
 };
 
 // Export a function that handles the request to the '/category/create' Post route
