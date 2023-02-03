@@ -91,7 +91,7 @@ exports.productCreateGet = (req, res, next) => {
       //We don't need to copy items into a new variable since the lean option
       //returns a JS object rather than a mongoose document
       res.render('productForm', {
-        title: 'Add Product',
+        title: 'Add Product Details',
         categories: categoryList,
       });
     });
@@ -124,8 +124,16 @@ exports.productCreatePost = [
         .sort({ name: 1 })
         .exec((err, categoryList) => {
           if (err) return next(err);
+          // Converting the Error object Array to a simple JS object for easy
+          // error Handling on client side
+          const errorObject = errors.array().reduce((arr, cur) => {
+            // For each error in the array of errors, add the error's `param`
+            // as a key to `errorObject` and the error's `msg` as the value associated with that key
+            arr[cur.param] = cur.msg;
+            return arr;
+          }, {}); // start with an empty object as the accumulator `err`
           res.render('productForm', {
-            title: 'Add Product',
+            title: 'Add Product Details',
             name: req.body.name,
             description: req.body.description,
             SKU: req.body.sku,
@@ -133,7 +141,7 @@ exports.productCreatePost = [
             quantity: req.body.quantity,
             price: req.body.price,
             categories: categoryList,
-            errors: errors.array(),
+            errors: errorObject,
           });
         });
       return;
