@@ -1,33 +1,43 @@
-<main>
-  <h2 class="my-4">{{title}}</h2>
-  <form action="" method="POST">
-    <div>
-      <label for="name">Category Name: </label>
-      <input 
-        type="text" 
-        id="name" 
-        name="name"
-        required="true"
-        {{#if name}}
-          value={{name}}
+<main class="pt-4 border border-3 border-top-0 border-end-0 rounded w-75">
+  <h2 class="mx-2">{{title}}</h2>
+  <form action="" method="POST" class="p-3 w-75" novalidate>
+    <div class="row">
+      <div class="col-sm-6 mb-3">
+        <label for="name" class="form-label">Name: </label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name"
+          required="true"
+          {{#if name}}
+            value={{name}}
+          {{/if}}
+          class="form-control {{#if errors}} {{#if errors.name}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
+        >
+        {{#if errors.name}}
+          <div class="invalid-feedback">
+            {{errors.name}}
+          </div>
         {{/if}}
-      >
+      </div>
     </div>
-    <div>
-      <label for="description">Category Description</label>
-      <textarea 
-        id="description" 
-        name="description"
-        required="true"
-     >{{#if description}}{{description}}{{/if}}</textarea>
+    <div class="row">
+      <div class="col-lg-12 mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea 
+          id="description" 
+          name="description"
+          rows="5"
+          required="true"
+          class="form-control {{#if errors}} {{#if errors.description}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
+      >{{#if description}}{{description}}{{/if}}</textarea> 
+      {{#if errors.description}}
+        <div class="invalid-feedback">
+          {{errors.description}}
+        </div>
+      {{/if}}
+      </div>
     </div>
-    <button type="submit">Submit</button>
+    <button type="submit" class="btn btn-primary">Submit</button>
   </form>
-  {{#if error}}
-    <ul>
-      {{#each error}}
-      <p>{{this.msg}}</p>
-      {{/each}}
-    </ul>
-  {{/if}}
 </main>
