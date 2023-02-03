@@ -84,11 +84,19 @@ exports.categoryCreatePost = [
     //return all the entered data And all the Mistakes made by the user
     //Destructured Category to avoid Handlebars Security flaw issue
     if (!errors.isEmpty()) {
+      // Converting the Error object Array to a simple JS object for easy
+      // error Handling on client side
+      const errorObject = errors.array().reduce((arr, cur) => {
+        // For each error in the array of errors, add the error's `param`
+        // as a key to `errorObject` and the error's `msg` as the value associated with that key
+        arr[cur.param] = cur.msg;
+        return arr;
+      }, {}); // start with an empty object as the accumulator `err`
       res.render('categoryForm', {
-        title: 'Create Category',
+        title: 'Add Category Details',
         name: req.body.name,
         description: req.body.description,
-        errors: errors.array(),
+        errors: errorObject,
       });
       return;
     } else {
