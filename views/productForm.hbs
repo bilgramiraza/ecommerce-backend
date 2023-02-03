@@ -14,9 +14,11 @@
           {{/if}}
           class="form-control {{#if errors}} {{#if errors.name}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
         >
-        <div class="invalid-feedback">
-          {{errors.name}}
-        </div>
+        {{#if errors.name}}
+          <div class="invalid-feedback">
+            {{errors.name}}
+          </div>
+        {{/if}}
       </div>
       <div class="col-md-6 mb-3">
         <label for="category" class="form-label">Category: </label>
@@ -44,9 +46,11 @@
           </option>  
         {{/each}}
         </select>
-        <div class="invalid-feedback">
-          {{errors.category}}
-        </div>
+        {{#if errors.category}}
+          <div class="invalid-feedback">
+            {{errors.category}}
+          </div>
+        {{/if}}
       </div>
     </div>
     <div class="row">
@@ -59,9 +63,11 @@
           required="true"
           class="form-control {{#if errors}} {{#if errors.description}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
         >{{#if description}}{{description}}{{/if}}</textarea>
-        <div class="invalid-feedback">
-          {{errors.description}}
-        </div>
+        {{#if errors.description}}
+          <div class="invalid-feedback">
+            {{errors.description}}
+          </div>
+        {{/if}}
       </div>
     </div>
     <div class="row">
@@ -77,9 +83,11 @@
           {{/if}}
           class="form-control {{#if errors}} {{#if errors.sku}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
         >
-        <div class="invalid-feedback">
-          {{errors.sku}}
-        </div>
+        {{#if errors.sku}}
+          <div class="invalid-feedback">
+            {{errors.sku}}
+          </div>
+        {{/if}}
       </div>
       <div class="col-sm-4 mb-3">
         <label for="quantity" class="form-label">Quantity: </label>
@@ -95,9 +103,11 @@
             class="form-control {{#if errors}} {{#if errors.quantity}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
           >
           <span class="input-group-text">units</span>
-          <div class="invalid-feedback">
-            {{errors.quantity}}
-          </div>
+          {{#if errors.quantity}}
+            <div class="invalid-feedback">
+              {{errors.quantity}}
+            </div>
+          {{/if}}
         </div>
       </div>
       <div class="col-sm-4 mb-3">
@@ -114,9 +124,11 @@
             {{/if}}
             class="form-control {{#if errors}} {{#if errors.price}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
           >
-          <div class="invalid-feedback">
-            {{errors.price}}
-          </div>
+          {{#if errors.price}}
+            <div class="invalid-feedback">
+              {{errors.price}}
+            </div>
+          {{/if}}
          </div>
       </div>
     </div>
