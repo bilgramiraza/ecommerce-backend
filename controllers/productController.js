@@ -169,8 +169,18 @@ exports.productCreatePost = [
   },
 ];
 
-exports.productDeleteGet = (req, res) => {
-  res.send('NOT IMPLEMENTED: Product Delete GET');
+exports.productDeleteGet = (req, res, next) => {
+  Product.findById(req.params.id)
+    .populate('category')
+    .lean()
+    .exec((err, product) => {
+      if (err) return next(err);
+      if (product === null) res.redirect('/inventory/products');
+      res.render('productDelete', {
+        title: 'Delete Product',
+        product,
+      });
+    });
 };
 
 exports.productDeletePost = (req, res) => {
