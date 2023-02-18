@@ -183,8 +183,14 @@ exports.productDeleteGet = (req, res, next) => {
     });
 };
 
-exports.productDeletePost = (req, res) => {
-  res.send('NOT IMPLEMENTED: Product Delete POST');
+exports.productDeletePost = (req, res, next) => {
+  Product.findById(req.body.productId).exec((err, product) => {
+    if (err) return next(err);
+    Product.findByIdAndDelete(req.body.productId, (err) => {
+      if (err) return next(err);
+      res.redirect('/inventory/products');
+    });
+  });
 };
 
 exports.productUpdateGet = (req, res) => {
