@@ -1,0 +1,20 @@
+<main class="pt-4 border border-3 border-top-0 border-end-0 rounded w-75">
+  <h2 class=" mx-2">{{title}}</h2>
+  <article>
+    <h3>{{product.name}}</h3>
+    <p>Category: {{product.category.name}}</p>
+    <p>SKU: {{product.SKU}}</p>
+    <p>Quantity: {{product.quantity}}</p>
+    <p>price: {{product.price}}</p>
+    <p>description: {{product.description}}</p>
+  </article>
+  <form action="" method="POST" class="p-3 w-75" novalidate>
+    <input 
+      type="hidden" 
+      name="productId" 
+      value="{{product._id}}"
+      required="true" 
+    >
+    <button type="submit" class="btn btn-danger">Delete</button>
+  </form>
+</main>
