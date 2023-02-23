@@ -147,8 +147,37 @@ exports.categoryDeleteGet = (req, res, next) => {
   );
 };
 
-exports.categoryDeletePost = (req, res) => {
-  res.send('NOT IMPLEMENTED: Category Delete POST');
+exports.categoryDeletePost = (req, res, next) => {
+  async.parallel(
+    {
+      category(callback) {
+        Category.findById(req.body.categoryId).lean().exec(callback);
+      },
+      productsInCategory(callback) {
+        Product.find({ category: req.body.categoryId }).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) return next(err);
+      if (results.productsInCategory.length > 0) {
+        // Create a new array of products based on the array of productsInCategory,
+        // but convert each product document to a plain JavaScript object & include its virtuals
+        const productsList = results.productsInCategory.map((product) =>
+          product.toObject({ virtuals: true })
+        );
+        res.render('categoryDelete', {
+          title: 'Delete Category',
+          category: results.category,
+          productsList,
+        });
+        return;
+      }
+      Category.findByIdAndDelete(req.body.categoryId, (err) => {
+        if (err) return next(err);
+        res.redirect('/inventory/categories');
+      });
+    }
+  );
 };
 
 exports.categoryUpdateGet = (req, res) => {
