@@ -119,8 +119,32 @@ exports.categoryCreatePost = [
   },
 ];
 
-exports.categoryDeleteGet = (req, res) => {
-  res.send('NOT IMPLEMENTED: Category Delete GET');
+exports.categoryDeleteGet = (req, res, next) => {
+  async.parallel(
+    {
+      category(callback) {
+        Category.findById(req.params.id).lean().exec(callback);
+      },
+      productsInCategory(callback) {
+        Product.find({ category: req.params.id }).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) return next(err);
+      if (results.category == null) res.redirect('/inventory/categories');
+
+      // Create a new array of products based on the array of productsInCategory,
+      // but convert each product document to a plain JavaScript object & include its virtuals
+      const productsList = results.productsInCategory.map((product) =>
+        product.toObject({ virtuals: true })
+      );
+      res.render('categoryDelete', {
+        title: 'Delete Category',
+        category: results.category,
+        productsList,
+      });
+    }
+  );
 };
 
 exports.categoryDeletePost = (req, res) => {
