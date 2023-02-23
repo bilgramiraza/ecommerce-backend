@@ -64,6 +64,7 @@ exports.categoryDetail = (req, res, next) => {
         title: results.category.name,
         categoryDescription: results.category.description,
         categoryProducts: copiedCategoryProducts,
+        deleteUrl: results.category.url + '/delete',
       });
     }
   );
