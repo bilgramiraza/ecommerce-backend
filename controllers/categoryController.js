@@ -32,35 +32,31 @@ exports.categoryDetail = (req, res, next) => {
       },
       categoryProducts(callback) {
         // Find the products with the specified category ID
-        Product.find({ category: req.params.id }).exec(callback);
+        Product.find({ category: req.params.id }).sort({ name: 1 }).exec(callback);
       },
     },
-    (err, results) => {
+    (err, { category, categoryProducts }) => {
       if (err) return next(err);
       // If the category is not found, create an error object with a
       //'Category not Found' message and a 404 status code
-      if (results.category == null) {
+      if (!category) {
         const err = new Error('Category not Found');
         err.status = 404;
         return next(err);
       }
-      // To avoid a security exploit, Handlebars cannot access properties of Mongoose objects directly
-      // Hence, we are required to manually Specify the values that handlebars can access
-      const copiedCategoryProducts = results.categoryProducts.map((product) => {
-        return {
-          url: product.url,
-          name: product.name,
-          description: product.description,
-          quantity: product.quantity,
-          price: product.price,
-        };
-      });
+      // To avoid a security exploit, Handlebars cannot access properties of Mongoose objects
+      // So we convert them to POJOs while maintaining their virtual properties.
+      const products = categoryProducts.map((product) => product.toObject({ virtuals: true }));
+
+      // Extract the relevant properties from the category object for convenience
+      // and Render the 'categoryDetails' view
+      const { name, description, url } = category;
       res.render('categoryDetail', {
-        title: results.category.name,
-        categoryDescription: results.category.description,
-        categoryProducts: copiedCategoryProducts,
-        deleteUrl: results.category.url + '/delete',
-        updateUrl: results.category.url + '/update',
+        title: name,
+        description,
+        products,
+        deleteUrl: `${url}/delete`,
+        updateUrl: `${url}/update`,
       });
     }
   );
