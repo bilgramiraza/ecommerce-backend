@@ -181,8 +181,21 @@ exports.categoryDeletePost = (req, res, next) => {
   );
 };
 
-exports.categoryUpdateGet = (req, res) => {
-  res.send('NOT IMPLEMENTED: Category Update GET');
+exports.categoryUpdateGet = (req, res, next) => {
+  Category.findById(req.params.id)
+    .lean()
+    .exec((err, category) => {
+      if (err) next(err);
+      if (category == null) {
+        const error = new Error('Category Not Found');
+        error.status = 404;
+        return next(error);
+      }
+      res.render('categoryForm', {
+        title: 'Update Category Details',
+        ...category,
+      });
+    });
 };
 
 exports.categoryUpdatePost = (req, res) => {
