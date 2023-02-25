@@ -225,6 +225,59 @@ exports.productUpdateGet = (req, res, next) => {
   );
 };
 
-exports.productUpdatePost = (req, res) => {
-  res.send('NOT IMPLEMENTED: Product Update POST');
-};
+exports.productUpdatePost = [
+  body('name', 'Product Name must be specified').trim().isLength({ min: 1 }).escape(),
+  body('description', 'Product Description must be specified')
+    .trim()
+    .isLength({ min: 1, max: 500 })
+    .escape(),
+  body('sku', 'Product SKU must be specified').trim().isLength({ min: 1 }).escape(),
+  body('category', 'Product Category must be specified').trim().isLength({ min: 1 }).escape(),
+  body('quantity', 'Product Quantity must be specified')
+    .isInt({ gt: 0 })
+    .withMessage('Product Quantity must be an Positive Number'),
+  body('price', 'Product Price must be specified')
+    .isFloat({ gt: 0 })
+    .withMessage('The Product Price must be a positive number'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      Category.find({})
+        .select('name')
+        .lean()
+        .sort({ name: 1 })
+        .exec((err, categories) => {
+          if (err) return next(err);
+          const errorObject = errors.array().reduce((arr, cur) => {
+            arr[cur.param] = cur.msg;
+            return arr;
+          }, {});
+          res.render('productForm', {
+            title: 'Update Product Details',
+            name: req.body.name,
+            description: req.body.description,
+            SKU: req.body.sku,
+            category: req.body.category,
+            quantity: req.body.quantity,
+            price: req.body.price,
+            categories,
+            errors: errorObject,
+          });
+        });
+      return;
+    }
+    const updatedProduct = new Product({
+      name: req.body.name,
+      description: req.body.description,
+      SKU: req.body.sku,
+      category: req.body.category,
+      quantity: req.body.quantity,
+      price: req.body.price,
+      _id: req.params.id,
+    });
+    Product.findByIdAndUpdate(req.params.id, updatedProduct, {}, (err, product) => {
+      if (err) return next(err);
+      res.redirect(product.url);
+    });
+  },
+];
