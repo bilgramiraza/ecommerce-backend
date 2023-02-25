@@ -71,20 +71,18 @@ exports.categoryCreateGet = (req, res, next) => {
 exports.categoryCreatePost = [
   body('name', 'Category Name Required').trim().isLength({ min: 1 }).escape(),
   body('description', 'Category Description Missing').trim().isLength({ min: 1 }).escape(),
-  (req, res, next) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
     //If the returned data had failed validation, We reload the page and
     //return all the entered data And all the Mistakes made by the user
-    //Destructured Category to avoid Handlebars Security flaw issue
     if (!errors.isEmpty()) {
       // Converting the Error object Array to a simple JS object for easy
       // error Handling on client side
-      const errorObject = errors.array().reduce((arr, cur) => {
-        // For each error in the array of errors, add the error's `param`
-        // as a key to `errorObject` and the error's `msg` as the value associated with that key
-        arr[cur.param] = cur.msg;
-        return arr;
-      }, {}); // start with an empty object as the accumulator `err`
+      const errorArray = errors.array();
+      // For each error in the array of errors, add the error's `param`
+      // as a key to `errorObject` and the error's `msg` as the value associated with that key
+      const errorObject = Object.fromEntries(errorArray.map((error) => [error.param, error.msg]));
+
       res.render('categoryForm', {
         title: 'Add Category Details',
         name: req.body.name,
@@ -92,22 +90,24 @@ exports.categoryCreatePost = [
         errors: errorObject,
       });
       return;
-    } else {
+    }
+    // Save the Data in a new Category Object to operate on it
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+    });
+    try {
       //If the Data passes validation We check for duplicates of this data
+      const foundCategory = await Category.findOne({ name: req.body.name }).exec();
+
       //If duplicates are found we redirect to the existing categories page
+      if (foundCategory) return res.redirect(foundCategory.url);
+
       //Else we save it and redirect to the new categories page
-      const category = new Category({
-        name: req.body.name,
-        description: req.body.description,
-      });
-      Category.findOne({ name: req.body.name }).exec((err, foundCategory) => {
-        if (err) return next(err);
-        if (foundCategory) res.redirect(foundCategory.url);
-        category.save((err) => {
-          if (err) return next(err);
-          res.redirect(category.url);
-        });
-      });
+      await category.save();
+      return res.redirect(category.url);
+    } catch (err) {
+      return next(err);
     }
   },
 ];
