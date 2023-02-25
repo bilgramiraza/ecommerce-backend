@@ -4,27 +4,22 @@ const async = require('async');
 const { body, validationResult } = require('express-validator');
 
 // Export a function that handles the request to the '/categories' route
-exports.categoryList = (req, res, next) => {
-  // Find all categories in the 'Category' collection and
-  ///return only the 'name', 'description' properties
-  Category.find({}, 'name description')
-    .sort({ name: 1 })
-    .exec((err, listCategories) => {
-      if (err) return next(err);
-      // To avoid a security exploit, Handlebars cannot access properties of Mongoose objects directly
-      // Hence, we are required to manually Specify the values that handlebars can access
-      const copiedListCategories = listCategories.map((category) => {
-        return {
-          name: category.name,
-          description: category.description,
-          url: category.url,
-        };
-      });
-      res.render('categoryList', {
-        title: 'Categories',
-        categories: copiedListCategories,
-      });
+exports.categoryList = async (req, res, next) => {
+  // Find all categories in the 'Category' collection
+  try {
+    // Find all categories in the 'Category' collection and sort by name
+    const categoryMongoose = await Category.find({}).sort({ name: 1 }).exec();
+
+    // Convert the Mongoose documents to plain JavaScript objects with virtual properties
+    const categories = categoryMongoose.map((category) => category.toObject({ virtuals: true }));
+
+    res.render('categoryList', {
+      title: 'Categories',
+      categories,
     });
+  } catch (err) {
+    next(err);
+  }
 };
 
 // Export a function that handles the request to the '/category/:id' route
