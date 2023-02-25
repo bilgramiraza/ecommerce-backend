@@ -198,6 +198,32 @@ exports.categoryUpdateGet = (req, res, next) => {
     });
 };
 
-exports.categoryUpdatePost = (req, res) => {
-  res.send('NOT IMPLEMENTED: Category Update POST');
-};
+exports.categoryUpdatePost = [
+  body('name', 'Category Name Required').trim().isLength({ min: 1 }).escape(),
+  body('description', 'Category Description Missing').trim().isLength({ min: 1 }).escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const errorObject = errors.array().reduce((arr, cur) => {
+        arr[cur.param] = cur.msg;
+        return arr;
+      }, {});
+      res.render('categoryForm', {
+        title: 'Update Cateogory Details',
+        name: req.body.name,
+        description: req.body.description,
+        errors: errorObject,
+      });
+      return;
+    }
+    const updatedCategory = new Category({
+      name: req.body.name,
+      description: req.body.description,
+      _id: req.params.id,
+    });
+    Category.findByIdAndUpdate(req.params.id, updatedCategory, {}, (err, category) => {
+      if (err) return next(err);
+      res.redirect(category.url);
+    });
+  },
+];
