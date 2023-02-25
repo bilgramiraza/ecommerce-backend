@@ -194,8 +194,35 @@ exports.productDeletePost = (req, res, next) => {
   });
 };
 
-exports.productUpdateGet = (req, res) => {
-  res.send('NOT IMPLEMENTED: Product Update GET');
+exports.productUpdateGet = (req, res, next) => {
+  async.parallel(
+    {
+      product(callback) {
+        Product.findById(req.params.id).populate('category').lean().exec(callback);
+      },
+      categories(callback) {
+        Category.find({}).select('name').lean().sort({ name: 1 }).exec(callback);
+      },
+    },
+    (err, results) => {
+      if (err) return next(err);
+      if (results.product == null) {
+        const err = new Error('Product Not Found');
+        err.status = 404;
+        return next(err);
+      }
+      res.render('productForm', {
+        title: 'Update Product Details',
+        name: results.product.name,
+        description: results.product.description,
+        SKU: results.product.SKU,
+        category: results.product.category._id.toString(),
+        quantity: results.product.quantity,
+        price: results.product.price,
+        categories: results.categories,
+      });
+    }
+  );
 };
 
 exports.productUpdatePost = (req, res) => {
