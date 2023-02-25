@@ -75,6 +75,7 @@ exports.productDetail = (req, res, next) => {
         quantity: productDetails.quantity,
         price: productDetails.price,
         deleteUrl: productDetails.url + '/delete',
+        updateUrl: productDetails.url + '/update',
       });
     });
 };
