@@ -202,32 +202,38 @@ exports.categoryUpdateGet = async (req, res, next) => {
   }
 };
 
+// This controller function handles POST requests to the category update form.
 exports.categoryUpdatePost = [
+  // Validate the name and description fields using express-validator
   body('name', 'Category Name Required').trim().isLength({ min: 1 }).escape(),
   body('description', 'Category Description Missing').trim().isLength({ min: 1 }).escape(),
-  (req, res, next) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
+    const { name, description } = req.body;
     if (!errors.isEmpty()) {
-      const errorObject = errors.array().reduce((arr, cur) => {
-        arr[cur.param] = cur.msg;
-        return arr;
-      }, {});
+      // For each error in the array of errors, add the error's `param`
+      // as a key to `errorObject` and the error's `msg` as the value associated with that key
+      const errorObject = Object.fromEntries(errorArray.map((error) => [error.param, error.msg]));
       res.render('categoryForm', {
         title: 'Update Cateogory Details',
-        name: req.body.name,
-        description: req.body.description,
+        name,
+        description,
         errors: errorObject,
       });
       return;
     }
-    const updatedCategory = new Category({
-      name: req.body.name,
-      description: req.body.description,
+    const category = new Category({
+      name,
+      description,
       _id: req.params.id,
     });
-    Category.findByIdAndUpdate(req.params.id, updatedCategory, {}, (err, category) => {
-      if (err) return next(err);
+    try {
+      // Find and update the category using findByIdAndUpdate() method and redirect to category page
+      await Category.findByIdAndUpdate(req.params.id, category, { new: true });
       res.redirect(category.url);
-    });
+    } catch (err) {
+      // If an error occurs during category update, pass it to the next middleware for error handling
+      return next(err);
+    }
   },
 ];
