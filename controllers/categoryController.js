@@ -183,21 +183,23 @@ exports.categoryDeletePost = (req, res, next) => {
   );
 };
 
-exports.categoryUpdateGet = (req, res, next) => {
-  Category.findById(req.params.id)
-    .lean()
-    .exec((err, category) => {
-      if (err) next(err);
-      if (category == null) {
-        const error = new Error('Category Not Found');
-        error.status = 404;
-        return next(error);
-      }
-      res.render('categoryForm', {
-        title: 'Update Category Details',
-        ...category,
-      });
+// This controller function handles GET requests to the category update form.
+exports.categoryUpdateGet = async (req, res, next) => {
+  try {
+    // Try to find the category specified in the request URL by its ID
+    const category = await Category.findById(req.params.id)
+      // and convert it to a plain JavaScript object
+      .lean()
+      // If the category is not found, throw a 404 error with a custom message and status code
+      .orFail({ statusCode: 404, message: 'Category Not Found' })
+      .exec();
+    res.render('categoryForm', {
+      title: 'Update Category Details',
+      ...category,
     });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 exports.categoryUpdatePost = [
