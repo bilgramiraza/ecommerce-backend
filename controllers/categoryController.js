@@ -112,28 +112,30 @@ exports.categoryCreatePost = [
   },
 ];
 
+// Define the categoryDeleteGet controller function
 exports.categoryDeleteGet = (req, res, next) => {
   async.parallel(
     {
+      // Query to find the category by ID and convert the result to a plain JavaScript object
       category(callback) {
         Category.findById(req.params.id).lean().exec(callback);
       },
+      // Query to find all products in the category and return them as documents
       productsInCategory(callback) {
         Product.find({ category: req.params.id }).exec(callback);
       },
     },
-    (err, results) => {
+    (err, { category, productsInCategory }) => {
       if (err) return next(err);
-      if (results.category == null) res.redirect('/inventory/categories');
+      if (!category) res.redirect('/inventory/categories');
 
-      // Create a new array of products based on the array of productsInCategory,
-      // but convert each product document to a plain JavaScript object & include its virtuals
-      const productsList = results.productsInCategory.map((product) =>
+      // Convert each product document to a plain JavaScript object with virtuals
+      const productsList = productsInCategory.map((product) =>
         product.toObject({ virtuals: true })
       );
       res.render('categoryDelete', {
         title: 'Delete Category',
-        category: results.category,
+        category,
         productsList,
       });
     }
