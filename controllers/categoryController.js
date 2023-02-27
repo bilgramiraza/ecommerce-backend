@@ -142,31 +142,39 @@ exports.categoryDeleteGet = (req, res, next) => {
   );
 };
 
+// Define a controller function for handling the category delete POST request
 exports.categoryDeletePost = (req, res, next) => {
   async.parallel(
     {
+      // Query the Category collection to find the category document to be deleted by its ID
       category(callback) {
         Category.findById(req.body.categoryId).lean().exec(callback);
       },
+      // Query the Product collection to find all products that belong to the category to be deleted
       productsInCategory(callback) {
         Product.find({ category: req.body.categoryId }).exec(callback);
       },
     },
-    (err, results) => {
+    (err, { category, productsInCategory }) => {
       if (err) return next(err);
-      if (results.productsInCategory.length > 0) {
+      // If there are products in the category to be deleted,
+      // Just rerender the page, since we don't allow you to delete categories
+      // if they are attached to products
+      if (productsInCategory.length > 0) {
         // Create a new array of products based on the array of productsInCategory,
         // but convert each product document to a plain JavaScript object & include its virtuals
-        const productsList = results.productsInCategory.map((product) =>
+        const productsList = productsInCategory.map((product) =>
           product.toObject({ virtuals: true })
         );
         res.render('categoryDelete', {
           title: 'Delete Category',
-          category: results.category,
+          category,
           productsList,
         });
         return;
       }
+      // If there are no products under this category,
+      //Delete it and and redirect user to the All categories List Page
       Category.findByIdAndDelete(req.body.categoryId, (err) => {
         if (err) return next(err);
         res.redirect('/inventory/categories');
