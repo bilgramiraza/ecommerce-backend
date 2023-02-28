@@ -58,33 +58,44 @@ exports.productList = async (req, res, next) => {
 };
 
 // Export a function that handles the request to the '/product/:id' route
-exports.productDetail = (req, res, next) => {
-  // Find the Product in the 'Product' collection and
-  ///return its properties
-  Product.findById(req.params.id)
-    .populate('category')
-    .exec((err, productDetails) => {
-      if (err) return next(err);
-      if (productDetails == null) {
-        const err = new Error('Product not Found');
-        err.status = 404;
-        return next(err);
-      }
-      const categoryDetails = {
-        name: productDetails.category.name,
-        url: productDetails.category.url,
-      };
-      res.render('productDetail', {
-        title: productDetails.name,
-        description: productDetails.description,
-        SKU: productDetails.SKU,
-        category: categoryDetails,
-        quantity: productDetails.quantity,
-        price: productDetails.price,
-        deleteUrl: productDetails.url + '/delete',
-        updateUrl: productDetails.url + '/update',
-      });
+exports.productDetail = async (req, res, next) => {
+  try {
+    // Find the Product in the 'Product' collection and
+    ///return its properties
+    const productDetails = await Product.findById(req.params.id).populate('category').exec();
+    // If no product is found, return a 404 error
+    if (!productDetails) {
+      const err = new Error('Product not Found');
+      err.status = 404;
+      return next(err);
+    }
+    // Destructure the properties from the 'productDetails' object
+    // and assign them to variables with different names
+    const {
+      name: title,
+      description,
+      SKU: sku,
+      category: { name: categoryName, url: categoryUrl },
+      quantity,
+      price,
+      url,
+    } = productDetails;
+
+    // Render the 'productDetail' view and pass in the required data
+    res.render('productDetail', {
+      title,
+      description,
+      sku,
+      categoryName,
+      categoryUrl,
+      quantity,
+      price,
+      deleteUrl: `${url}/delete`,
+      updateUrl: `${url}/update`,
     });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 // Export a function that handles the request to the '/product/create' Get route
