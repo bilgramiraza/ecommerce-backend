@@ -29,29 +29,32 @@ exports.index = (req, res, next) => {
 };
 
 // Export a function that handles the request to the '/products' route
-exports.productList = (req, res, next) => {
+exports.productList = async (req, res, next) => {
   // Find all products in the 'Product' collection and
   ///return only the 'name', 'category', and 'quantity' properties
-  Product.find({}, 'name category quantity')
-    .sort({ name: 1 })
-    .populate('category')
-    .exec((err, listProducts) => {
-      if (err) return next(err);
-      //To avoid an security expliot Handlebars cannot access properties of mongoose objects directly
-      //Hence, we are required to manually copy the properties to another variable
-      const copiedListProducts = listProducts.map((product) => {
-        return {
-          name: product.name,
-          category: product.category.name,
-          quantity: product.quantity,
-          url: product.url,
-        };
-      });
-      res.render('productList', {
-        title: 'Products',
-        products: copiedListProducts,
-      });
+  try {
+    const listProducts = await Product.find({}, 'name category quantity')
+      .sort({ name: 1 })
+      .populate({ path: 'category', select: 'name url' })
+      .exec();
+
+    // Create a new array of products with the required properties
+    const products = listProducts.map((product) => {
+      return {
+        name: product.name,
+        category: product.category.name,
+        categoryUrl: product.category.url,
+        quantity: product.quantity,
+        productUrl: product.url,
+      };
     });
+    res.render('productList', {
+      title: 'Products',
+      products,
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 // Export a function that handles the request to the '/product/:id' route

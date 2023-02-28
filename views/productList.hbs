@@ -4,9 +4,11 @@
     {{#each products}}
       <div>
         <p>
-          <a href={{this.url}}>{{this.name}}</a> 
+          <a href={{this.productUrl}}>{{this.name}}</a> 
         </p>
-        <p>Category: {{this.category}}</p>
+        <p>
+          Category: <a href={{this.categoryUrl}}>{{this.category}}</a>
+        </p>
         <p>Qty: {{this.quantity}}</p>
       </div>
     {{else}}
