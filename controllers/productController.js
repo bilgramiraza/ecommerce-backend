@@ -99,22 +99,26 @@ exports.productDetail = async (req, res, next) => {
 };
 
 // Export a function that handles the request to the '/product/create' Get route
-exports.productCreateGet = (req, res, next) => {
-  //Find all categories in the database, select only name property,
-  //and return a JS object containing the _id and name values
-  Category.find({})
-    .select('name')
-    .lean()
-    .sort({ name: 1 })
-    .exec((err, categoryList) => {
-      if (err) return next(err);
-      //We don't need to copy items into a new variable since the lean option
-      //returns a JS object rather than a mongoose document
-      res.render('productForm', {
-        title: 'Add Product Details',
-        categories: categoryList,
-      });
+exports.productCreateGet = async (req, res, next) => {
+  try {
+    // Find all categories in the database, select only name property,
+    // and return a JS object containing the _id and name values
+    // We Apply the lean function as well to get A Plain Old JavaScript Object
+    // for better performance and better compatibility with handlebars
+    const categories = await Category.find({}).select('name').lean().sort({ name: 1 }).exec();
+    // We check if there are No categories present which is not allowed
+    if (!categories.length) {
+      const err = new Error('No Categories Found');
+      err.status = 404;
+      return next(err);
+    }
+    res.render('productForm', {
+      title: 'Add Product Details',
+      categories,
     });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 // Export a function that handles the request to the '/product/create' Post route
