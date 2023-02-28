@@ -211,6 +211,9 @@ exports.categoryUpdatePost = [
     const errors = validationResult(req);
     const { name, description } = req.body;
     if (!errors.isEmpty()) {
+      // Converting the Error object Array to a simple JS object for easy
+      // error Handling on client side
+      const errorArray = errors.array();
       // For each error in the array of errors, add the error's `param`
       // as a key to `errorObject` and the error's `msg` as the value associated with that key
       const errorObject = Object.fromEntries(errorArray.map((error) => [error.param, error.msg]));
