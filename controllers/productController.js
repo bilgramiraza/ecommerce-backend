@@ -4,21 +4,25 @@ const Category = require('../models/category');
 const async = require('async');
 const { body, validationResult } = require('express-validator');
 
-exports.index = (req, res) => {
+// Export a function that handles the request to the '/inventory' route AKA the HomePage
+exports.index = (req, res, next) => {
   async.parallel(
     {
+      // Query the Product collection and get the count of documents
       productCount(callback) {
         Product.countDocuments({}, callback);
       },
+      // Query the Category collection and get the count of documents
       categoryCount(callback) {
         Category.countDocuments({}, callback);
       },
     },
-    (err, results) => {
+    (err, { productCount, categoryCount }) => {
+      if (err) return next(err);
       res.render('index', {
         title: 'Ecommerce Dashboard',
-        error: err,
-        data: results,
+        productCount,
+        categoryCount,
       });
     }
   );
