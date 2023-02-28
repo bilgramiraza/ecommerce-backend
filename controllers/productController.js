@@ -62,14 +62,14 @@ exports.productDetail = async (req, res, next) => {
   try {
     // Find the Product in the 'Product' collection and
     ///return its properties
-    const productDetails = await Product.findById(req.params.id).populate('category').exec();
+    const product = await Product.findById(req.params.id).populate('category').exec();
     // If no product is found, return a 404 error
-    if (!productDetails) {
+    if (!product) {
       const err = new Error('Product not Found');
       err.status = 404;
       return next(err);
     }
-    // Destructure the properties from the 'productDetails' object
+    // Destructure the properties from the 'product' object
     // and assign them to variables with different names
     const {
       name: title,
@@ -79,7 +79,7 @@ exports.productDetail = async (req, res, next) => {
       quantity,
       price,
       url,
-    } = productDetails;
+    } = product;
 
     // Render the 'productDetail' view and pass in the required data
     res.render('productDetail', {
