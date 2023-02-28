@@ -2,38 +2,38 @@
   <h2 class="my-4">
     {{title}}
   </h2>
-  {{#if error}}
-    <h3 class="text-center text-warning">Error getting Inventory Details</h3>
-  {{else}}
-  <div class="row justify-content-evenly mx-auto w-75">
-    <div class="col-lg-3">
-      <div class="card text-center">
-        <h3 class="card-header">
-          Products 
-        </h3>
-        <h4 class="my-3 fw-bolder">
-          {{data.productCount}}
-        </h4>
-        <h4>
-          <a href="/inventory/products" class="btn btn-primary">All Products</a>
-          <a href="/inventory/product/create" class="btn btn-success">Add New Product</a>
-        </h4>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card text-center">
-        <h3 class="card-header">
-          Categories
-        </h3>
-        <h4 class="my-3 fw-bolder">
-          {{data.categoryCount}}
-        </h4>
-        <h4>
-          <a href="/inventory/categories" class="btn btn-primary">All Categories</a>
-          <a href="/inventory/category/create" class="btn btn-success">Add New Category</a>
-        </h4>
-      </div> 
-    </div>
-  </div>
-  {{/if}}
+  <section class="row justify-content-evenly mx-auto w-75">
+    <article class="col-lg-3">
+      <section class="card text-center">
+        <header class="card-header">
+          <h3>Products</h3> 
+        </header>
+        <div class="card-body">
+          <h4 class="fw-bolder">
+            {{productCount}}
+          </h4>
+          <div class="d-flex justify-content-evenly">
+            <a href="/inventory/products" class="btn btn-primary me-2">All Products</a>
+            <a href="/inventory/product/create" class="btn btn-success">Add New Product</a>
+          </div>
+        </div>
+      </section>
+    </article>
+    <article class="col-lg-4">
+      <section class="card text-center">
+        <header class="card-header">
+          <h3>Categories</h3>  
+        </header>
+        <div class="card-body">
+          <h4 class="fw-bolder">
+            {{categoryCount}}
+          </h4>
+          <div class="d-flex justify-content-evenly">
+            <a href="/inventory/categories" class="btn btn-primary me-2">All Categories</a>
+            <a href="/inventory/category/create" class="btn btn-success">Add New Category</a>
+          </div>
+        </div>
+      </section> 
+    </article>
+  </section>
 </main>
