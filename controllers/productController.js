@@ -146,7 +146,7 @@ exports.productCreatePost = [
 
         // Retrieve all the categories from the database for use in the product form
         const categories = await Category.find({}).select('name').lean().sort({ name: 1 }).exec();
-        // Retrieve all the categories from the database for use in the product form
+        // If no categories are found, Redirect to error Page.
         if (!categories.length) {
           const err = new Error('No Categories Found');
           err.status = 404;
@@ -262,7 +262,9 @@ exports.productUpdateGet = async (req, res, next) => {
   }
 };
 
+// Export a function that handles the request to the '/product/:id/update' Post route
 exports.productUpdatePost = [
+  // Validate that the fields in the form are present and have valid values
   body('name', 'Product Name must be specified').trim().isLength({ min: 1 }).escape(),
   body('description', 'Product Description must be specified')
     .trim()
@@ -276,45 +278,61 @@ exports.productUpdatePost = [
   body('price', 'Product Price must be specified')
     .isFloat({ gt: 0 })
     .withMessage('The Product Price must be a positive number'),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      Category.find({})
-        .select('name')
-        .lean()
-        .sort({ name: 1 })
-        .exec((err, categories) => {
-          if (err) return next(err);
-          const errorObject = errors.array().reduce((arr, cur) => {
-            arr[cur.param] = cur.msg;
-            return arr;
-          }, {});
-          res.render('productForm', {
-            title: 'Update Product Details',
-            name: req.body.name,
-            description: req.body.description,
-            SKU: req.body.sku,
-            category: req.body.category,
-            quantity: req.body.quantity,
-            price: req.body.price,
-            categories,
-            errors: errorObject,
-          });
+  async (req, res, next) => {
+    try {
+      const errors = validationResult(req);
+      // Extract all the form data we get from the page using object Destructuring
+      // for easier manipulation
+      const { name, description, sku, category, quantity, price } = req.body;
+      //If the returned data had failed validation, We reload the page and
+      //return all the entered data And all the Mistakes made by the user
+      if (!errors.isEmpty()) {
+        // Converting the Error object Array to a simple JS object for easy
+        // error Handling on client side
+        const errorArray = errors.array();
+        // For each error in the array of errors, add the error's `param`
+        // as a key to `errorObject` and the error's `msg` as the value associated with that key
+        const errorObject = Object.fromEntries(errorArray.map((error) => [error.param, error.msg]));
+
+        // Retrieve all the categories from the database for use in the product form
+        const categories = await Category.find({}).select('name').lean().sort({ name: 1 }).exec();
+        // If no categories are found, Redirect to error Page.
+        if (!categories.length) {
+          const err = new Error('No Categories Found');
+          err.status = 404;
+          return next(err);
+        }
+        // Render the product form with the original data and the errors
+        res.render('productForm', {
+          title: 'Update Product Details',
+          name,
+          description,
+          SKU: sku,
+          category,
+          quantity,
+          price,
+          categories,
+          errors: errorObject,
         });
-      return;
+        return;
+      }
+
+      // If there are no validation errors, create a new product object and save it to the database
+      const product = new Product({
+        name,
+        description,
+        SKU: sku,
+        category,
+        quantity,
+        price,
+        _id: req.params.id,
+      });
+      const updatedProduct = await Product.findByIdAndUpdate(req.params.id, product, { new: true });
+      // Redirect to the updated product's details page
+      res.redirect(updatedProduct.url);
+    } catch (err) {
+      // If an error occurs, forward it to the error handler middleware
+      return next(err);
     }
-    const updatedProduct = new Product({
-      name: req.body.name,
-      description: req.body.description,
-      SKU: req.body.sku,
-      category: req.body.category,
-      quantity: req.body.quantity,
-      price: req.body.price,
-      _id: req.params.id,
-    });
-    Product.findByIdAndUpdate(req.params.id, updatedProduct, {}, (err, product) => {
-      if (err) return next(err);
-      res.redirect(product.url);
-    });
   },
 ];
