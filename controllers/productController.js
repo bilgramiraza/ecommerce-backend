@@ -123,6 +123,7 @@ exports.productCreateGet = async (req, res, next) => {
 
 // Export a function that handles the request to the '/product/create' Post route
 exports.productCreatePost = [
+  // Validate that the fields in the form are present and have valid values
   body('name', 'Product Name must be specified').trim().isLength({ min: 1 }).escape(),
   body('description', 'Product Description must be specified')
     .trim()
@@ -136,59 +137,62 @@ exports.productCreatePost = [
   body('price', 'Product Price must be specified')
     .isFloat({ gt: 0 })
     .withMessage('The Product Price must be a positive number'),
-  (req, res, next) => {
-    const errors = validationResult(req);
-    //If the returned data had failed validation, We reload the page and
-    //return all the entered data And all the Mistakes made by the user
-    //Destructured Category to avoid Handlebars Security flaw issue
-    if (!errors.isEmpty()) {
-      Category.find({})
-        .select('name')
-        .lean()
-        .sort({ name: 1 })
-        .exec((err, categoryList) => {
-          if (err) return next(err);
-          // Converting the Error object Array to a simple JS object for easy
-          // error Handling on client side
-          const errorObject = errors.array().reduce((arr, cur) => {
-            // For each error in the array of errors, add the error's `param`
-            // as a key to `errorObject` and the error's `msg` as the value associated with that key
-            arr[cur.param] = cur.msg;
-            return arr;
-          }, {}); // start with an empty object as the accumulator `err`
-          res.render('productForm', {
-            title: 'Add Product Details',
-            name: req.body.name,
-            description: req.body.description,
-            SKU: req.body.sku,
-            category: req.body.category,
-            quantity: req.body.quantity,
-            price: req.body.price,
-            categories: categoryList,
-            errors: errorObject,
-          });
+  async (req, res, next) => {
+    try {
+      const errors = validationResult(req);
+      // Extract all the form data we get from the page using object Destructuring
+      // for easier manipulation
+      const { name, description, sku, category, quantity, price } = req.body;
+      //If the returned data had failed validation, We reload the page and
+      //return all the entered data And all the Mistakes made by the user
+      if (!errors.isEmpty()) {
+        // Converting the Error object Array to a simple JS object for easy
+        // error Handling on client side
+        const errorArray = errors.array();
+        // For each error in the array of errors, add the error's `param`
+        // as a key to `errorObject` and the error's `msg` as the value associated with that key
+        const errorObject = Object.fromEntries(errorArray.map((error) => [error.param, error.msg]));
+
+        // Retrieve all the categories from the database for use in the product form
+        const categories = await Category.find({}).select('name').lean().sort({ name: 1 }).exec();
+        // Retrieve all the categories from the database for use in the product form
+        if (!categories.length) {
+          const err = new Error('No Categories Found');
+          err.status = 404;
+          return next(err);
+        }
+        // Render the product form with the original data and the errors
+        res.render('productForm', {
+          title: 'Add Product Details',
+          name,
+          description,
+          SKU: sku,
+          category,
+          quantity,
+          price,
+          categories,
+          errors: errorObject,
         });
-      return;
-    } else {
+        return;
+      }
       //If the Data passes validation We check for duplicates of this data
+      const product = new Product({
+        name,
+        description,
+        SKU: sku,
+        category,
+        quantity,
+        price,
+      });
       //If duplicates are found we redirect to the existing product page
       //Else we save it and redirect to the new product page
-      const product = new Product({
-        name: req.body.name,
-        description: req.body.description,
-        SKU: req.body.sku,
-        category: req.body.category,
-        quantity: req.body.quantity,
-        price: req.body.price,
-      });
-      Product.findOne({ name: req.body.name }).exec((err, foundProduct) => {
-        if (err) return next(err);
-        if (foundProduct) res.redirect(foundProduct.url);
-        product.save((err) => {
-          if (err) return next(err);
-          res.redirect(product.url);
-        });
-      });
+      const productLookUp = await Product.findOne({ name: name }).exec();
+      if (productLookUp) return res.redirect(productLookUp.url);
+      await product.save();
+      return res.redirect(product.url);
+    } catch (err) {
+      // If an error occurs, forward it to the error handler middleware
+      return next(err);
     }
   },
 ];
