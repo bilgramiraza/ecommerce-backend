@@ -1,31 +1,22 @@
 const Product = require('../models/product');
 const Category = require('../models/category');
-
-const async = require('async');
 const { body, validationResult } = require('express-validator');
 
 // Export a function that handles the request to the '/inventory' route AKA the HomePage
-exports.index = (req, res, next) => {
-  async.parallel(
-    {
-      // Query the Product collection and get the count of documents
-      productCount(callback) {
-        Product.countDocuments({}, callback);
-      },
-      // Query the Category collection and get the count of documents
-      categoryCount(callback) {
-        Category.countDocuments({}, callback);
-      },
-    },
-    (err, { productCount, categoryCount }) => {
-      if (err) return next(err);
-      res.render('index', {
-        title: 'Ecommerce Dashboard',
-        productCount,
-        categoryCount,
-      });
-    }
-  );
+exports.index = async (req, res, next) => {
+  try {
+    // Query the Product collection and get the count of documents
+    const productCount = await Product.countDocuments({}).exec();
+    // Query the Category collection and get the count of documents
+    const categoryCount = await Category.countDocuments({}).exec();
+    res.render('index', {
+      title: 'Ecommerce Dashboard',
+      productCount,
+      categoryCount,
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 // Export a function that handles the request to the '/products' route
