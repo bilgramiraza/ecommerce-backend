@@ -197,18 +197,25 @@ exports.productCreatePost = [
   },
 ];
 
-exports.productDeleteGet = (req, res, next) => {
-  Product.findById(req.params.id)
-    .populate('category')
-    .lean()
-    .exec((err, product) => {
-      if (err) return next(err);
-      if (product === null) res.redirect('/inventory/products');
-      res.render('productDelete', {
-        title: 'Delete Product',
-        product,
-      });
+// Export a function that handles the request to the '/product/:id/delete' Get route
+exports.productDeleteGet = async (req, res, next) => {
+  try {
+    // Find the product with the given ID,
+    // and populate the 'category' field of the product document
+    const product = await Product.findById(req.params.id).populate('category').lean().exec();
+
+    // If no product was found, redirect to the All products page
+    if (!product) return res.redirect('/inventory/products');
+
+    // Render the product delete page with the product details
+    res.render('productDelete', {
+      title: 'Delete Product',
+      product,
     });
+  } catch (err) {
+    // If an error occurs, forward it to the error handler middleware
+    return next(err);
+  }
 };
 
 exports.productDeletePost = (req, res, next) => {
