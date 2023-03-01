@@ -238,35 +238,37 @@ exports.productDeletePost = async (req, res, next) => {
   }
 };
 
-exports.productUpdateGet = (req, res, next) => {
-  async.parallel(
-    {
-      product(callback) {
-        Product.findById(req.params.id).populate('category').lean().exec(callback);
-      },
-      categories(callback) {
-        Category.find({}).select('name').lean().sort({ name: 1 }).exec(callback);
-      },
-    },
-    (err, results) => {
-      if (err) return next(err);
-      if (results.product == null) {
-        const err = new Error('Product Not Found');
-        err.status = 404;
-        return next(err);
-      }
-      res.render('productForm', {
-        title: 'Update Product Details',
-        name: results.product.name,
-        description: results.product.description,
-        SKU: results.product.SKU,
-        category: results.product.category._id.toString(),
-        quantity: results.product.quantity,
-        price: results.product.price,
-        categories: results.categories,
-      });
+// Export a function that handles the request to the '/product/:id/update' Get route
+exports.productUpdateGet = async (req, res, next) => {
+  try {
+    // Find the product with the specified ID and populate its `category` field
+    const product = await Product.findById(req.params.id).populate('category').lean().exec();
+    // If the product is not found, return a 404 error to the error handling middleware
+    if (!product) {
+      const err = new Error('Product Not Found');
+      err.status = 404;
+      return next(err);
     }
-  );
+    // Find all categories and sort them by name
+    const categories = await Category.find({}).select('name').lean().sort({ name: 1 }).exec();
+
+    // Find all categories and sort them by name
+    const { name, description, SKU, category, quantity, price } = product;
+    // Render the product form with the retrieved data
+    res.render('productForm', {
+      title: 'Update Product Details',
+      name,
+      description,
+      SKU,
+      category: category._id.toString(),
+      quantity,
+      price,
+      categories,
+    });
+  } catch (err) {
+    // If an error occurs, forward it to the error handler middleware
+    return next(err);
+  }
 };
 
 exports.productUpdatePost = [
