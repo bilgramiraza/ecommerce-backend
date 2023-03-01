@@ -218,14 +218,24 @@ exports.productDeleteGet = async (req, res, next) => {
   }
 };
 
-exports.productDeletePost = (req, res, next) => {
-  Product.findById(req.body.productId).exec((err, product) => {
-    if (err) return next(err);
-    Product.findByIdAndDelete(req.body.productId, (err) => {
-      if (err) return next(err);
-      res.redirect('/inventory/products');
-    });
-  });
+// Export a function that handles the request to the '/product/:id/delete' Post route
+exports.productDeletePost = async (req, res, next) => {
+  try {
+    // Find and delete the product with the specified ID
+    const product = await Product.findByIdAndDelete(req.body.productId).exec();
+    // If the product was not found, we could optionally display a custom error page or message
+    // However, in this implementation we will simply redirect the user to the products page
+    // without displaying any error message
+    /*
+    if (!product) {
+      // Do something here, such as displaying an error page or message to the user
+    }
+    */
+    return res.redirect('/inventory/products');
+  } catch (err) {
+    // If an error occurs, forward it to the error handler middleware
+    return next(err);
+  }
 };
 
 exports.productUpdateGet = (req, res, next) => {
