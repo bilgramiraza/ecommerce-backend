@@ -232,8 +232,10 @@ exports.categoryUpdatePost = [
     });
     try {
       // Find and update the category using findByIdAndUpdate() method and redirect to category page
-      await Category.findByIdAndUpdate(req.params.id, category, { new: true });
-      res.redirect(category.url);
+      const updatedCategory = await Category.findByIdAndUpdate(req.params.id, category, {
+        new: true,
+      });
+      res.redirect(updatedCategory.url);
     } catch (err) {
       // If an error occurs during category update, pass it to the next middleware for error handling
       return next(err);
