@@ -2,7 +2,6 @@ const Product = require('../models/product');
 const Category = require('../models/category');
 const { unlink } = require('node:fs/promises');
 const { check, body, validationResult } = require('express-validator');
-const { resolve } = require('path');
 
 // Export a function that handles the request to the '/inventory' route AKA the HomePage
 exports.index = async (req, res, next) => {
