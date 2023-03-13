@@ -131,6 +131,7 @@ exports.productCreatePost = [
     .isFloat({ min: 0 })
     .withMessage('The Product Price must be a positive number'),
   check('productImage').custom((value, { req }) => {
+    //Custom Validator for Displaying Error message for invalid Image Inputs
     if (!req || !req.files.length) {
       throw new Error('No Images Uploaded, Only PNG/JPG/JPEG images Allowed');
     }
@@ -148,6 +149,7 @@ exports.productCreatePost = [
       //If the returned data had failed validation, We reload the page and
       //return all the entered data And all the Mistakes made by the user
       if (!errors.isEmpty()) {
+        //Deleting the uploaded Images before rerendering the page
         if (req && req.files) {
           Promise.all(
             req.files.map((file) => {
@@ -184,12 +186,13 @@ exports.productCreatePost = [
         });
         return;
       }
-      //If the Data passes validation We check for duplicates of this data
+      //Extracting Details of the Uploaded Images
       const images = req.files.map(({ filename, path, mimetype }) => ({
         fileName: filename,
         path,
         mimeType: mimetype,
       }));
+      //If the Data passes validation We check for duplicates of this data
       const product = new Product({
         name,
         description,
