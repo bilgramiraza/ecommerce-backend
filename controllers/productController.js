@@ -163,7 +163,11 @@ exports.productCreatePost = [
         // For each error in the array of errors, add the error's `param`
         // as a key to `errorObject` and the error's `msg` as the value associated with that key
         const errorObject = Object.fromEntries(errorArray.map((error) => [error.param, error.msg]));
-
+        //If We get *Any* errors the user must Reupload their Images
+        //This check Adds that Error Message for the user
+        if (!errorObject.hasOwnProperty('productImage')) {
+          errorObject.productImage = 'As a security Measure, Please Reupload the Images';
+        }
         // Retrieve all the categories from the database for use in the product form
         const categories = await Category.find({}).select('name').lean().sort({ name: 1 }).exec();
         // If no categories are found, Redirect to error Page.
