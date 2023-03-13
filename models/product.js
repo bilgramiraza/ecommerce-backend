@@ -10,7 +10,7 @@ const ProductSchema = new Schema({
   price: { type: Number, min: 0, required: true },
   images: [
     {
-      filename: { type: String, required: true },
+      fileName: { type: String, required: true },
       path: { type: String, required: true },
       mimeType: { type: String, required: true },
     },
