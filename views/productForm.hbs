@@ -1,135 +1,156 @@
 <main class="pt-4 border border-3 border-top-0 border-end-0 rounded w-75">
   <h2 class=" mx-2">{{title}}</h2>
-  <form action="" method="POST" class="p-3 w-75" novalidate>
+  <form action="/inventory/product/create" method="POST" class="p-3" novalidate enctype="multipart/form-data">
     <div class="row">
-      <div class="col-sm-6 mb-3">
-        <label for="name" class="form-label">Name: </label>
-        <input 
-          type="text" 
-          id="name" 
-          name="name"
-          required="true"
-          {{#if name}}
-            value="{{name}}"
-          {{/if}}
-          class="form-control {{#if errors}} {{#if errors.name}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
-        >
-        {{#if errors.name}}
-          <div class="invalid-feedback">
-            {{errors.name}}
-          </div>
-        {{/if}}
-      </div>
-      <div class="col-md-6 mb-3">
-        <label for="category" class="form-label">Category: </label>
-        <select
-          id="category" 
-          name="category"
-          placeholder="Select Category"
-          required="true"
-          class="form-select {{#if errors}} {{#if errors.category}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
-        >
-        <option 
-          value="" 
-          disabled="disabled"
-          selected="selected">
-          Select A Category
-        </option>
-        {{#each categories}}
-          <option 
-            value={{this._id}}
-            {{#selected ../category this._id}}
-              selected="selected" 
-            {{/selected}}
-            > 
-            {{{this.name}}}
-          </option>  
-        {{/each}}
-        </select>
-        {{#if errors.category}}
-          <div class="invalid-feedback">
-            {{errors.category}}
-          </div>
-        {{/if}}
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-12 mb-3">
-        <label for="description" class="form-label">Description</label>
-        <textarea 
-          id="description" 
-          name="description"
-          rows="5"
-          required="true"
-          class="form-control {{#if errors}} {{#if errors.description}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
-        >{{#if description}}{{description}}{{/if}}</textarea>
-        {{#if errors.description}}
-          <div class="invalid-feedback">
-            {{errors.description}}
-          </div>
-        {{/if}}
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-4 mb-3">
-        <label for="sku" class="form-label">SKU: </label>
-        <input 
-          type="text" 
-          id="sku" 
-          name="sku"
-          required="true"
-          {{#if SKU}}
-            value={{SKU}}
-          {{/if}}
-          class="form-control {{#if errors}} {{#if errors.sku}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
-        >
-        {{#if errors.sku}}
-          <div class="invalid-feedback">
-            {{errors.sku}}
-          </div>
-        {{/if}}
-      </div>
-      <div class="col-sm-4 mb-3">
-        <label for="quantity" class="form-label">Quantity: </label>
-        <div class="input-group">
-          <input 
-            type="number" 
-            id="quantity" 
-            name="quantity"
-            required="true"
-            {{#if quantity}}
-              value={{quantity}}
+      <div class="col-lg-7">
+        <div class="row">
+          <div class="col-sm-6 mb-3">
+            <label for="name" class="form-label">Name: </label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name"
+              required="true"
+              {{#if name}}
+                value="{{name}}"
+              {{/if}}
+              class="form-control {{#if errors}} {{#if errors.name}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
+            >
+            {{#if errors.name}}
+              <div class="invalid-feedback">
+                {{errors.name}}
+              </div>
             {{/if}}
-            class="form-control {{#if errors}} {{#if errors.quantity}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="category" class="form-label">Category: </label>
+            <select
+              id="category" 
+              name="category"
+              placeholder="Select Category"
+              required="true"
+              class="form-select {{#if errors}} {{#if errors.category}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
+            >
+            <option 
+              value="" 
+              disabled="disabled"
+              selected="selected">
+              Select A Category
+            </option>
+            {{#each categories}}
+              <option 
+                value={{this._id}}
+                {{#selected ../category this._id}}
+                  selected="selected" 
+                {{/selected}}
+                > 
+                {{{this.name}}}
+              </option>  
+            {{/each}}
+            </select>
+            {{#if errors.category}}
+              <div class="invalid-feedback">
+                {{errors.category}}
+              </div>
+            {{/if}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12 mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea 
+              id="description" 
+              name="description"
+              rows="5"
+              required="true"
+              class="form-control {{#if errors}} {{#if errors.description}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
+            >{{#if description}}{{description}}{{/if}}</textarea>
+            {{#if errors.description}}
+              <div class="invalid-feedback">
+                {{errors.description}}
+              </div>
+            {{/if}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4 mb-3">
+            <label for="sku" class="form-label">SKU: </label>
+            <input 
+              type="text" 
+              id="sku" 
+              name="sku"
+              required="true"
+              {{#if SKU}}
+                value={{SKU}}
+              {{/if}}
+              class="form-control {{#if errors}} {{#if errors.sku}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
+            >
+            {{#if errors.sku}}
+              <div class="invalid-feedback">
+                {{errors.sku}}
+              </div>
+            {{/if}}
+          </div>
+          <div class="col-sm-4 mb-3">
+            <label for="quantity" class="form-label">Quantity: </label>
+            <div class="input-group">
+              <input 
+                type="number" 
+                id="quantity" 
+                name="quantity"
+                required="true"
+                {{#if quantity}}
+                  value={{quantity}}
+                {{/if}}
+                class="form-control {{#if errors}} {{#if errors.quantity}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
+              >
+              <span class="input-group-text">units</span>
+              {{#if errors.quantity}}
+                <div class="invalid-feedback">
+                  {{errors.quantity}}
+                </div>
+              {{/if}}
+            </div>
+          </div>
+          <div class="col-sm-4 mb-3">
+            <label for="price" class="form-label">Price: </label>
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input 
+                type="text" 
+                id="price" 
+                name="price"
+                required="true"
+                {{#if price}}
+                  value={{price}}
+                {{/if}}
+                class="form-control {{#if errors}} {{#if errors.price}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
+              >
+              {{#if errors.price}}
+                <div class="invalid-feedback">
+                  {{errors.price}}
+                </div>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="row">
+          <label for="productImage" class="form-label">Add Images</label>
+          <input 
+            class="form-control form-control-lg {{#if errors}} {{#if errors.productImage}} is-invalid {{else}} is-valid {{/if}}{{/if}}" 
+            type="file" 
+            id="productImage" 
+            name="productImage" 
+            multiple="multiple"
           >
-          <span class="input-group-text">units</span>
-          {{#if errors.quantity}}
+          {{#if errors.productImage}}
             <div class="invalid-feedback">
-              {{errors.quantity}}
+              {{errors.productImage}}
             </div>
           {{/if}}
         </div>
-      </div>
-      <div class="col-sm-4 mb-3">
-        <label for="price" class="form-label">Price: </label>
-        <div class="input-group">
-          <span class="input-group-text">₹</span>
-          <input 
-            type="text" 
-            id="price" 
-            name="price"
-            required="true"
-            {{#if price}}
-              value={{price}}
-            {{/if}}
-            class="form-control {{#if errors}} {{#if errors.price}} is-invalid {{else}} is-valid {{/if}}{{/if}}"
-          >
-          {{#if errors.price}}
-            <div class="invalid-feedback">
-              {{errors.price}}
-            </div>
-          {{/if}}
-         </div>
       </div>
     </div>
     <div class="row">
