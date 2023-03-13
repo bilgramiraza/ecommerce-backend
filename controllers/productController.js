@@ -185,6 +185,11 @@ exports.productCreatePost = [
         return;
       }
       //If the Data passes validation We check for duplicates of this data
+      const images = req.files.map(({ filename, path, mimetype }) => ({
+        fileName: filename,
+        path,
+        mimeType: mimetype,
+      }));
       const product = new Product({
         name,
         description,
@@ -192,6 +197,7 @@ exports.productCreatePost = [
         category,
         quantity,
         price,
+        images,
       });
       //If duplicates are found we redirect to the existing product page
       //Else we save it and redirect to the new product page
