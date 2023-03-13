@@ -1,6 +1,8 @@
 const Product = require('../models/product');
 const Category = require('../models/category');
-const { body, validationResult } = require('express-validator');
+const { unlink } = require('node:fs/promises');
+const { check, body, validationResult } = require('express-validator');
+const { resolve } = require('path');
 
 // Export a function that handles the request to the '/inventory' route AKA the HomePage
 exports.index = async (req, res, next) => {
@@ -123,11 +125,20 @@ exports.productCreatePost = [
   body('sku', 'Product SKU must be specified').trim().isLength({ min: 1 }).escape(),
   body('category', 'Product Category must be specified').trim().isLength({ min: 1 }).escape(),
   body('quantity', 'Product Quantity must be specified')
-    .isInt({ gt: 0 })
+    .isInt({ min: 0 })
     .withMessage('Product Quantity must be an Positive Number'),
   body('price', 'Product Price must be specified')
-    .isFloat({ gt: 0 })
+    .isFloat({ min: 0 })
     .withMessage('The Product Price must be a positive number'),
+  check('productImage').custom((value, { req }) => {
+    if (!req || !req.files.length) {
+      throw new Error('No Images Uploaded, Only PNG/JPG/JPEG images Allowed');
+    }
+    if (req.files.length < 2) {
+      throw new Error('Please Upload Atleast 2 Images');
+    }
+    return true;
+  }),
   async (req, res, next) => {
     try {
       const errors = validationResult(req);
@@ -137,6 +148,13 @@ exports.productCreatePost = [
       //If the returned data had failed validation, We reload the page and
       //return all the entered data And all the Mistakes made by the user
       if (!errors.isEmpty()) {
+        if (req && req.files) {
+          Promise.all(
+            req.files.map((file) => {
+              return unlink(file.path);
+            })
+          ).catch((err) => next(err));
+        }
         // Converting the Error object Array to a simple JS object for easy
         // error Handling on client side
         const errorArray = errors.array();
