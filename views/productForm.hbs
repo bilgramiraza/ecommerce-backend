@@ -18,7 +18,9 @@
             >
             {{#if errors.name}}
               <div class="invalid-feedback">
-                {{errors.name}}
+                <ul class="mb-0">
+                  <li>{{errors.name}}</li>
+                </ul>
               </div>
             {{/if}}
           </div>
@@ -50,7 +52,9 @@
             </select>
             {{#if errors.category}}
               <div class="invalid-feedback">
-                {{errors.category}}
+                <ul class="mb-0">
+                  <li>{{errors.category}}</li>
+                </ul>
               </div>
             {{/if}}
           </div>
@@ -67,7 +71,9 @@
             >{{#if description}}{{description}}{{/if}}</textarea>
             {{#if errors.description}}
               <div class="invalid-feedback">
-                {{errors.description}}
+                <ul class="mb-0">
+                  <li>{{errors.description}}</li>
+                </ul>
               </div>
             {{/if}}
           </div>
@@ -87,7 +93,9 @@
             >
             {{#if errors.sku}}
               <div class="invalid-feedback">
-                {{errors.sku}}
+                <ul class="mb-0">
+                  <li>{{errors.sku}}</li>
+                </ul>
               </div>
             {{/if}}
           </div>
@@ -107,7 +115,9 @@
               <span class="input-group-text">units</span>
               {{#if errors.quantity}}
                 <div class="invalid-feedback">
-                  {{errors.quantity}}
+                  <ul class="mb-0">
+                    <li>{{errors.quantity}}</li>
+                  </ul>
                 </div>
               {{/if}}
             </div>
@@ -128,7 +138,9 @@
               >
               {{#if errors.price}}
                 <div class="invalid-feedback">
-                  {{errors.price}}
+                  <ul class="mb-0">
+                    <li>{{errors.price}}</li>
+                  </ul>
                 </div>
               {{/if}}
             </div>
@@ -137,17 +149,45 @@
       </div>
       <div class="col-lg-4">
         <div class="row">
-          <label for="productImage" class="form-label">Add Images</label>
+          <label for="productImage" class="form-label">Add Image</label>
           <input 
-            class="form-control form-control-lg {{#if errors}} {{#if errors.productImage}} is-invalid {{else}} is-valid {{/if}}{{/if}}" 
+            class="form-control form-control-lg {{#if errors}} is-invalid {{/if}}" 
             type="file" 
             id="productImage" 
             name="productImage" 
+          >
+          {{#if errors}}
+            <div class="invalid-feedback">
+              <ul class="mb-0">
+                {{#if errors.productImage}}
+                  <li>{{errors.productImage}}</li>
+                  <li>As a security Measure, Please Reupload the Image</li>
+                {{else}}
+                  <li>As a security Measure, Please Reupload the Image</li>
+                {{/if}}
+              </ul>
+            </div>
+          {{/if}}
+        </div>
+        <div class="row mt-3">
+          <label for="descriptionImages" class="form-label">Add Description Images</label>
+          <input 
+            class="form-control form-control-lg {{#if errors}} is-invalid {{/if}}" 
+            type="file" 
+            id="descriptionImages" 
+            name="descriptionImages" 
             multiple="multiple"
           >
-          {{#if errors.productImage}}
+          {{#if errors}}
             <div class="invalid-feedback">
-              {{errors.productImage}}
+              <ul class="mb-0">
+                {{#if errors.descriptionImages}}
+                  <li>{{errors.descriptionImages}}</li>
+                  <li>As a security Measure, Please Reupload the Images</li>
+                {{else}}
+                  <li>As a security Measure, Please Reupload the Images</li>
+                {{/if}}
+              </ul>
             </div>
           {{/if}}
         </div>
