@@ -13,7 +13,10 @@ router.get('/', productController.index);
 router.get('/product/create', productController.productCreateGet);
 router.post(
   '/product/create',
-  uploadMiddleware.array('productImage', 5),
+  uploadMiddleware.fields([
+    { name: 'productImage', maxCount: 1 },
+    { name: 'descriptionImages', maxCount: 5 },
+  ]),
   productController.productCreatePost
 );
 
