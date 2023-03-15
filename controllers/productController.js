@@ -131,10 +131,17 @@ exports.productCreatePost = [
     .withMessage('The Product Price must be a positive number'),
   check('productImage').custom((value, { req }) => {
     //Custom Validator for Displaying Error message for invalid Image Inputs
-    if (!req || !req.files.length) {
+    if (!req.files.productImage || !req.files.productImage.length) {
       throw new Error('No Images Uploaded, Only PNG/JPG/JPEG images Allowed');
     }
-    if (req.files.length < 2) {
+    return true;
+  }),
+  check('descriptionImages').custom((value, { req }) => {
+    //Custom Validator for Displaying Error message for invalid Image Inputs
+    if (!req.files.descriptionImages || !req.files.descriptionImages.length) {
+      throw new Error('No Images Uploaded, Only PNG/JPG/JPEG images Allowed');
+    }
+    if (req.files.descriptionImages.length < 2) {
       throw new Error('Please Upload Atleast 2 Images');
     }
     return true;
@@ -145,16 +152,24 @@ exports.productCreatePost = [
       // Extract all the form data we get from the page using object Destructuring
       // for easier manipulation
       const { name, description, sku, category, quantity, price } = req.body;
+      const { productImage, descriptionImages } = req.files;
       //If the returned data had failed validation, We reload the page and
       //return all the entered data And all the Mistakes made by the user
       if (!errors.isEmpty()) {
         //Deleting the uploaded Images before rerendering the page
         if (req && req.files) {
-          Promise.all(
-            req.files.map((file) => {
-              return unlink(file.path);
-            })
-          ).catch((err) => next(err));
+          const promises = [];
+          if (productImage) {
+            promises.push(unlink(productImage[0].path));
+          }
+          if (descriptionImages) {
+            promises.push(
+              ...descriptionImages.map((file) => {
+                return unlink(file.path);
+              })
+            );
+          }
+          Promise.all(promises).catch((err) => next(err));
         }
         // Converting the Error object Array to a simple JS object for easy
         // error Handling on client side
@@ -164,9 +179,13 @@ exports.productCreatePost = [
         const errorObject = Object.fromEntries(errorArray.map((error) => [error.param, error.msg]));
         //If We get *Any* errors the user must Reupload their Images
         //This check Adds that Error Message for the user
-        if (!errorObject.hasOwnProperty('productImage')) {
-          errorObject.productImage = 'As a security Measure, Please Reupload the Images';
+        if (
+          errorObject.hasOwnProperty('productImage') ||
+          errorObject.hasOwnProperty('descriptionImages')
+        ) {
+          errorObject.images = true;
         }
+
         // Retrieve all the categories from the database for use in the product form
         const categories = await Category.find({}).select('name').lean().sort({ name: 1 }).exec();
         // If no categories are found, Redirect to error Page.
