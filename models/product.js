@@ -13,7 +13,7 @@ const ProductSchema = new Schema({
     path: { type: String, required: true },
     mimeType: { type: String, required: true },
   },
-  discriptionImages: [
+  descriptionImages: [
     {
       fileName: { type: String, required: true },
       path: { type: String, required: true },

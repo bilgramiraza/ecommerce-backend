@@ -209,7 +209,12 @@ exports.productCreatePost = [
         return;
       }
       //Extracting Details of the Uploaded Images
-      const images = req.files.map(({ filename, path, mimetype }) => ({
+      const prodImageObject = {
+        fileName: productImage[0].filename,
+        path: productImage[0].path,
+        mimeType: productImage[0].mimetype,
+      };
+      const descImagesObjectArray = descriptionImages.map(({ filename, path, mimetype }) => ({
         fileName: filename,
         path,
         mimeType: mimetype,
@@ -222,7 +227,8 @@ exports.productCreatePost = [
         category,
         quantity,
         price,
-        images,
+        productImage: prodImageObject,
+        descriptionImages: descImagesObjectArray,
       });
       //If duplicates are found we redirect to the existing product page
       //Else we save it and redirect to the new product page
