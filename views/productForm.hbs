@@ -147,7 +147,7 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-4">
+      <div class="col-lg-5">
         <div class="row">
           <label for="productImage" class="form-label">Add Image</label>
           <input 
@@ -169,6 +169,13 @@
             </div>
           {{/if}}
         </div>
+        {{#if productImage}}
+          <div class="row mt-3">
+            <div class="d-flex">
+              <img src="/uploads/{{productImage.fileName}}" alt="product Image" type="{{productImage.mimeType}}" width="100" height="100">
+            </div>
+          </div>
+        {{/if}}
         <div class="row mt-3">
           <label for="descriptionImages" class="form-label">Add Description Images</label>
           <input 
@@ -191,6 +198,21 @@
             </div>
           {{/if}}
         </div>
+        {{#if descriptionImages}}
+          <div class="row mt-3 px-0 form-check d-flex">
+            {{#each descriptionImages}}
+              <div class="col-md-4 card mx-0 p-1">
+                <div class="d-flex">
+                  <img src="/uploads/{{this.fileName}}" alt="More Images" type="{{this.mimeType}}" width="100" height="100" class="card-img-top">
+                </div>
+                <div class="card-body p-0 d-grid">
+                  <input type="checkbox" class="btn-check" id="{{this.fileName}}" autocomplete="off">
+                  <label class="btn btn-outline-danger mt-1" for="{{this.fileName}}">Delete</label>
+                </div>
+              </div>
+            {{/each}}
+          </div>
+        {{/if}}
       </div>
     </div>
     <div class="row">
