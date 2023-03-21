@@ -26,7 +26,12 @@ router.post('/product/:id/delete', productController.productDeletePost);
 
 //Product Update Page
 router.get('/product/:id/update', productController.productUpdateGet);
-router.post('/product/:id/update', productController.productUpdatePost);
+router.post('/product/:id/update',
+  uploadMiddleware.fields([
+    { name: 'productImage', maxCount: 1 },
+    { name: 'descriptionImages', maxCount: 5 },
+  ]),
+  productController.productUpdatePost);
 
 //Product Details Page
 router.get('/product/:id', productController.productDetail);
