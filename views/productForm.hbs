@@ -1,6 +1,6 @@
 <main class="pt-4 border border-3 border-top-0 border-end-0 rounded w-75">
   <h2 class=" mx-2">{{title}}</h2>
-  <form action="/inventory/product/create" method="POST" class="p-3" novalidate enctype="multipart/form-data">
+  <form method="POST" class="p-3" novalidate enctype="multipart/form-data">
     <div class="row">
       <div class="col-lg-7">
         <div class="row">
@@ -206,8 +206,8 @@
                   <img src="/uploads/{{this.fileName}}" alt="More Images" type="{{this.mimeType}}" width="100" height="100" class="card-img-top">
                 </div>
                 <div class="card-body p-0 d-grid">
-                  <input type="checkbox" class="btn-check" id="{{this.fileName}}" autocomplete="off">
-                  <label class="btn btn-outline-danger mt-1" for="{{this.fileName}}">Delete</label>
+                  <input type="checkbox" class="btn-check" id="{{this._id}}" value="{{this._id}}" name="delDescImages" autocomplete="off">
+                  <label class="btn btn-outline-danger mt-1" for="{{this._id}}">Delete</label>
                 </div>
               </div>
             {{/each}}
