@@ -298,8 +298,8 @@ exports.productUpdateGet = async (req, res, next) => {
     // Find all categories and sort them by name
     const categories = await Category.find({}).select('name').lean().sort({ name: 1 }).exec();
 
-    // Find all categories and sort them by name
-    const { name, description, SKU, category, quantity, price } = product;
+    const { name, description, SKU, category, quantity, price, productImage, descriptionImages } =
+      product;
     // Render the product form with the retrieved data
     res.render('productForm', {
       title: 'Update Product Details',
@@ -309,6 +309,8 @@ exports.productUpdateGet = async (req, res, next) => {
       category: category._id.toString(),
       quantity,
       price,
+      productImage,
+      descriptionImages,
       categories,
     });
   } catch (err) {
@@ -333,24 +335,44 @@ exports.productUpdatePost = [
   body('price', 'Product Price must be specified')
     .isFloat({ gt: 0 })
     .withMessage('The Product Price must be a positive number'),
+  body('delDescImages.*').escape(),
   async (req, res, next) => {
-    try {
+    try {      
       const errors = validationResult(req);
       // Extract all the form data we get from the page using object Destructuring
       // for easier manipulation
-      const { name, description, sku, category, quantity, price } = req.body;
+      const { name, description, sku, category, quantity, price, delDescImages} = req.body;
+      const {productImage:newProductImage, descriptionImages:newDescriptionImages} = req.files;
       //If the returned data had failed validation, We reload the page and
       //return all the entered data And all the Mistakes made by the user
+      const {productImage:oldProductImage, descriptionImages:oldDescriptionImages} = await Product.findById(req.params.id).select('productImage descriptionImages').lean().exec();
+   
       if (!errors.isEmpty()) {
+        //Delete the Uploaded Images before Rerendering The Page
+        if (req && req.files) {
+          const promises = [];
+          if (newProductImage) {
+            promises.push(unlink(newProductImage[0].path));
+          }
+          if (newDescriptionImages) {
+            promises.push(
+              ...newDescriptionImages.map((file) => {
+                return unlink(file.path);
+              })
+            );
+          }
+          Promise.all(promises).catch((err) => next(err));
+        }
+
         // Converting the Error object Array to a simple JS object for easy
         // error Handling on client side
         const errorArray = errors.array();
         // For each error in the array of errors, add the error's `param`
         // as a key to `errorObject` and the error's `msg` as the value associated with that key
         const errorObject = Object.fromEntries(errorArray.map((error) => [error.param, error.msg]));
-
         // Retrieve all the categories from the database for use in the product form
         const categories = await Category.find({}).select('name').lean().sort({ name: 1 }).exec();
+        if(newProductImage || newDescriptionImages) errorObject.images =true;
         // If no categories are found, Redirect to error Page.
         if (!categories.length) {
           const err = new Error('No Categories Found');
@@ -367,11 +389,49 @@ exports.productUpdatePost = [
           quantity,
           price,
           categories,
+          productImage: oldProductImage,
+          descriptionImages: oldDescriptionImages,
           errors: errorObject,
         });
         return;
       }
-
+      // Deleting The Old Images and creating new ProductImage/DescriptionImages object to store details of the new images 
+      let productImage={};
+      const promises = [];
+      if( newProductImage){
+        promises.push(unlink(oldProductImage.path));
+        productImage={
+          fileName: newProductImage[0].filename,
+          path: newProductImage[0].path,
+          mimeType: newProductImage[0].mimetype,
+        };
+      }else{
+        productImage ={
+          fileName: oldProductImage.fileName,
+          path: oldProductImage.path,
+          mimeType: oldProductImage.mimeType,
+        };
+      }
+      if(delDescImages.length){
+        //Deleting the Selected Images from the server
+        oldDescriptionImages.forEach((image)=>{
+          if(delDescImages.includes(image._id.toString())){
+            promises.push(unlink(image.path));
+          }
+        });
+      }
+      Promise.all(promises).catch((err) => next(err));
+      //Generates a New Array of description images, removing the selected images And appending the newly uploaded ones
+      const descriptionImages= [
+        ...oldDescriptionImages
+          .filter((file)=>!delDescImages.includes(file._id.toString())),
+        ...newDescriptionImages
+          .map(({filename, path, mimetype})=>({
+            fileName:filename,
+            path,
+            mimeType:mimetype,
+          }))
+      ];
       // If there are no validation errors, create a new product object and save it to the database
       const product = new Product({
         name,
@@ -380,6 +440,8 @@ exports.productUpdatePost = [
         category,
         quantity,
         price,
+        productImage,
+        descriptionImages,
         _id: req.params.id,
       });
       const updatedProduct = await Product.findByIdAndUpdate(req.params.id, product, { new: true });
