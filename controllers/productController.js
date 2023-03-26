@@ -256,7 +256,7 @@ exports.productDeleteGet = async (req, res, next) => {
     // Render the product delete page with the product details
     res.render('productDelete', {
       title: 'Delete Product',
-      product,
+      ...product,
     });
   } catch (err) {
     // If an error occurs, forward it to the error handler middleware

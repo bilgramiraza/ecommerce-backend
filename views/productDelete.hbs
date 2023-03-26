@@ -1,24 +1,24 @@
 <main class="pt-4 border border-3 border-top-0 border-end-0 rounded w-75">
   <h2 class=" mx-2">{{title}}</h2>
   <article>
-    <h3>{{product.name}}</h3>
-    <p>Category: {{product.category.name}}</p>
-    <p>SKU: {{product.SKU}}</p>
-    <p>Quantity: {{product.quantity}}</p>
-    <p>price: {{product.price}}</p>
-    <p>description: {{product.description}}</p>
+    <h3>{{name}}</h3>
+    <p>Category: {{category.name}}</p>
+    <p>SKU: {{SKU}}</p>
+    <p>Quantity: {{quantity}}</p>
+    <p>price: {{price}}</p>
+    <p>description: {{description}}</p>
     <p>Product Image:</p>
-    {{#if product.productImage}}
+    {{#if productImage}}
       <div class="mx-2 row mt-3">
         <div class="d-flex">
-          <img src="/uploads/{{product.productImage.fileName}}" alt="product Image" type="{{product.productImage.mimeType}}" width="100" height="100">
+          <img src="/uploads/{{productImage.fileName}}" alt="product Image" type="{{productImage.mimeType}}" width="100" height="100">
         </div>
       </div>
     {{/if}}
     <p>Description Images:</p>
-    {{#if product.descriptionImages}}
+    {{#if descriptionImages}}
       <div class="mx-2 row mt-3 px-0 form-check d-flex w-50">
-        {{#each product.descriptionImages}}
+        {{#each descriptionImages}}
           <div class="col-md-4 card mx-0 p-1">
             <div class="d-flex">
               <img src="/uploads/{{this.fileName}}" alt="More Images" type="{{this.mimeType}}" width="100" height="100" class="card-img-top">
