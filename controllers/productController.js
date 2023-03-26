@@ -269,14 +269,21 @@ exports.productDeletePost = async (req, res, next) => {
   try {
     // Find and delete the product with the specified ID
     const product = await Product.findByIdAndDelete(req.body.productId).exec();
+    //Deletes any Images of the product from the server
+    if(product){
+      const promises =[];
+      if(product.productImage){
+        promises.push(unlink(product.productImage.path));
+      }
+      if(product.descriptionImages){
+        promises.push(...product.descriptionImages.map((file)=>unlink(file.path)));
+      }
+      Promise.all(promises).catch((err) => next(err));
+    }
     // If the product was not found, we could optionally display a custom error page or message
     // However, in this implementation we will simply redirect the user to the products page
     // without displaying any error message
-    /*
-    if (!product) {
-      // Do something here, such as displaying an error page or message to the user
-    }
-    */
+
     return res.redirect('/inventory/products');
   } catch (err) {
     // If an error occurs, forward it to the error handler middleware
