@@ -7,6 +7,26 @@
     <p>Quantity: {{product.quantity}}</p>
     <p>price: {{product.price}}</p>
     <p>description: {{product.description}}</p>
+    <p>Product Image:</p>
+    {{#if product.productImage}}
+      <div class="mx-2 row mt-3">
+        <div class="d-flex">
+          <img src="/uploads/{{product.productImage.fileName}}" alt="product Image" type="{{product.productImage.mimeType}}" width="100" height="100">
+        </div>
+      </div>
+    {{/if}}
+    <p>Description Images:</p>
+    {{#if product.descriptionImages}}
+      <div class="mx-2 row mt-3 px-0 form-check d-flex w-50">
+        {{#each product.descriptionImages}}
+          <div class="col-md-4 card mx-0 p-1">
+            <div class="d-flex">
+              <img src="/uploads/{{this.fileName}}" alt="More Images" type="{{this.mimeType}}" width="100" height="100" class="card-img-top">
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{/if}}
   </article>
   <form action="" method="POST" class="p-3 w-75" novalidate>
     <input 
