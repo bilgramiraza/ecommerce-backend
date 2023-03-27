@@ -25,7 +25,7 @@ exports.productList = async (req, res, next) => {
   // Find all products in the 'Product' collection and
   ///return only the 'name', 'category', and 'quantity' properties
   try {
-    const listProducts = await Product.find({}, 'name category quantity')
+    const listProducts = await Product.find({}, 'name category quantity productImage')
       .sort({ name: 1 })
       .populate({ path: 'category', select: 'name url' })
       .exec();
@@ -38,6 +38,7 @@ exports.productList = async (req, res, next) => {
         categoryUrl: product.category.url,
         quantity: product.quantity,
         productUrl: product.url,
+        productImage: product?.productImage,
       };
     });
     res.render('productList', {

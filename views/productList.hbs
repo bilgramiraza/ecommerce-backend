@@ -1,20 +1,23 @@
 <main>
-  <h2 class="my-4">{{title}}</h2>
-  <ul>
-    {{#each products}}
-      <div>
-        <p>
-          <a href={{this.productUrl}}>{{this.name}}</a> 
-        </p>
-        <p>
-          Category: <a href={{this.categoryUrl}}>{{this.category}}</a>
-        </p>
-        <p>Qty: {{this.quantity}}</p>
-      </div>
-    {{else}}
-      <div>
-        <p>No Products Found</p>
-      </div>
-    {{/each}}
-  </ul>
+  <h2 class="my-4">All {{title}}</h2>
+  <div class="row mx-2 justify-content-evenly w-75">
+      {{#each products}}
+        <div class="col-md-3 m-3 p-3 border border-1 rounded">
+          <div class="row mx-0">
+            <div class="col-md-5 py-1">
+              <img src="/uploads/{{this.productImage.fileName}}" alt="{{this.name}} Image" type="{{productImage.mimeType}}" class="img-fluid">
+            </div>
+            <div class="col-md-7  border-2 border-start">
+              <h4><a href={{this.productUrl}}>{{this.name}}</a></h4>
+              <p><a href={{this.categoryUrl}}>{{this.category}}</a></p>
+              <p>{{this.quantity}} item/s</p>
+            </div>
+          </div>
+        </div>
+      {{else}}
+        <div class="row w-75 border border-2">
+          <p>No Products Found</p>
+        </div>
+      {{/each}}
+  </div>
 </main>
