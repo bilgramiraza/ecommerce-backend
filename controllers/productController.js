@@ -71,9 +71,12 @@ exports.productDetail = async (req, res, next) => {
       category: { name: categoryName, url: categoryUrl },
       quantity,
       price,
+      productImage,
+      descriptionImages:customDescImages,
       url,
     } = product;
 
+    const descriptionImages = customDescImages.map(({fileName, path, mimeType})=>({fileName, path, mimeType}));
     // Render the 'productDetail' view and pass in the required data
     res.render('productDetail', {
       title,
@@ -83,6 +86,8 @@ exports.productDetail = async (req, res, next) => {
       categoryUrl,
       quantity,
       price,
+      productImage,
+      descriptionImages,
       deleteUrl: `${url}/delete`,
       updateUrl: `${url}/update`,
     });
