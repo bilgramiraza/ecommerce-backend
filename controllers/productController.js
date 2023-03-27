@@ -405,40 +405,64 @@ exports.productUpdatePost = [
       // Deleting The Old Images and creating new ProductImage/DescriptionImages object to store details of the new images 
       let productImage={};
       const promises = [];
-      if( newProductImage){
+      if( newProductImage){//Case: New Image uploaded
         promises.push(unlink(oldProductImage.path));
         productImage={
           fileName: newProductImage[0].filename,
           path: newProductImage[0].path,
           mimeType: newProductImage[0].mimetype,
         };
-      }else{
+      }else{// Case: No new Image uploaded
         productImage ={
           fileName: oldProductImage.fileName,
           path: oldProductImage.path,
           mimeType: oldProductImage.mimeType,
         };
       }
-      if(delDescImages.length){
+      //Case: Multiple Selected Images
+      if(Array.isArray(delDescImages)){
         //Deleting the Selected Images from the server
         oldDescriptionImages.forEach((image)=>{
           if(delDescImages.includes(image._id.toString())){
             promises.push(unlink(image.path));
           }
         });
+      }else if(delDescImages){ //Case: Single Selected Image
+        oldDescriptionImages.forEach((image)=>{
+          if(delDescImages === image._id.toString()){
+            promises.push(unlink(image.path));
+          }
+        });
       }
+      
       Promise.all(promises).catch((err) => next(err));
       //Generates a New Array of description images, removing the selected images And appending the newly uploaded ones
-      const descriptionImages= [
-        ...oldDescriptionImages
-          .filter((file)=>!delDescImages.includes(file._id.toString())),
-        ...newDescriptionImages
-          .map(({filename, path, mimetype})=>({
-            fileName:filename,
-            path,
-            mimeType:mimetype,
-          }))
-      ];
+      let oldDescImagesTemp = [];
+      if(Array.isArray(delDescImages)){
+        oldDescImagesTemp = oldDescriptionImages.filter((file)=>!delDescImages.includes(file._id.toString()));
+      }else if(delDescImages){
+        oldDescImagesTemp = oldDescriptionImages.filter((file)=>!(delDescImages === file._id.toString()));
+      }else{
+        oldDescImagesTemp = [...oldDescriptionImages];
+      }
+      let newDescImagesFormatted = [];
+      if(newDescriptionImages){
+        if(!Array.isArray(newDescriptionImages)){//Case: A single New Description images have been uploaded
+          newDescImagesFormatted = [{
+              fileName:newDescriptionImages.filename,
+              path:newDescriptionImages.path,
+              mimeType:newDescriptionImages.mimetype,
+            }];
+        }else{//Case: Multiple Description Images have been uploaded
+          newDescImagesFormatted = newDescriptionImages
+            .map(({filename, path, mimetype})=>({
+              fileName:filename,
+              path,
+              mimeType:mimetype,
+            }));
+        }
+      }
+      const descriptionImages= [...oldDescImagesTemp, ...newDescImagesFormatted];
       // If there are no validation errors, create a new product object and save it to the database
       const product = new Product({
         name,
