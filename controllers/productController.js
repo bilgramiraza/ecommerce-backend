@@ -214,11 +214,22 @@ exports.productCreatePost = [
         path: productImage[0].path,
         mimeType: productImage[0].mimetype,
       };
-      const descImagesObjectArray = descriptionImages.map(({ filename, path, mimetype }) => ({
-        fileName: filename,
-        path,
-        mimeType: mimetype,
-      }));
+      let descImagesObjectArray = [];
+      if(descriptionImages){
+        if(Array.isArray(descriptionImages)){
+          descImagesObjectArray = descriptionImages.map(({ filename, path, mimetype }) => ({
+            fileName: filename,
+            path,
+            mimeType: mimetype,
+          }));
+        }else{
+          descImagesObjectArray = {
+            fileName: descriptionImages.filename,
+            path: descriptionImages.path,
+            mimeType: descriptionImages.mimetype,
+          }
+        }
+      }
       //If the Data passes validation We check for duplicates of this data
       const product = new Product({
         name,
