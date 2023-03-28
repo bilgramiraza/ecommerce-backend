@@ -413,6 +413,7 @@ exports.productUpdatePost = [
           quantity,
           price,
           categories,
+          delDescImages,
           productImage: oldProductImage,
           descriptionImages: oldDescriptionImages,
           errors: errorObject,

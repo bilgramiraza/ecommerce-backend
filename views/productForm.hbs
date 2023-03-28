@@ -206,7 +206,7 @@
                   <img src="/uploads/{{this.fileName}}" alt="More Images" type="{{this.mimeType}}" width="100" height="100" class="card-img-top">
                 </div>
                 <div class="card-body p-0 d-grid">
-                  <input type="checkbox" class="btn-check" id="{{this._id}}" value="{{this._id}}" name="delDescImages" autocomplete="off">
+                  <input type="checkbox" class="btn-check" id="{{this._id}}" value="{{this._id}}" name="delDescImages" autocomplete="off" {{#if ../delDescImages}}{{#includes this._id ../delDescImages}}checked= "checked"{{/includes}}{{/if}}>
                   <label class="btn btn-outline-danger mt-1" for="{{this._id}}">Delete</label>
                 </div>
               </div>

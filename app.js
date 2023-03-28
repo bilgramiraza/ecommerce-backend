@@ -38,6 +38,21 @@ app.engine(
           return options.inverse(this);
         }
       },
+      includes: function(value1, value2,options){
+        if(Array.isArray(value2)){
+          if(value2.includes(value1.toString())){
+            return options.fn(this);
+          }else{
+            return options.inverse(this);
+          }
+        } else {
+          if(value1.toString() === value2){
+            return options.fn(this);
+          }else{
+            return options.inverse(this);
+          }
+        }
+      },
     },
   })
 );
